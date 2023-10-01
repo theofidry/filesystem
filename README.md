@@ -24,10 +24,6 @@ use Symfony\Component\Finder\Finder;
 use function getenv;
 use function is_string;
 
-/**
- * @internal
- */
-#[CoversClass(FileSystemTestCase::class)]
 final class MyAppFileSystemTest extends FileSystemTestCase
 {
     public static function getTmpDirNamespace(): string
