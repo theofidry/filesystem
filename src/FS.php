@@ -283,7 +283,7 @@ final class FS
      *
      * @throws IOException if the file cannot be written to
      */
-    public static function dumpFile(string $filename, $content): void
+    public static function dumpFile(string $filename, $content = ''): void
     {
         self::getInstance()->dumpFile(...func_get_args());
     }
