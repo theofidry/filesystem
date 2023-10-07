@@ -182,7 +182,7 @@ final class FS
      */
     public static function rename(string $origin, string $target, bool $overwrite = false): void
     {
-        self::getInstance()->remove(...func_get_args());
+        self::getInstance()->rename(...func_get_args());
     }
 
     /**
