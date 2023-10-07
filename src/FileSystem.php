@@ -79,6 +79,11 @@ final class FileSystem extends SymfonyFilesystem
         return str_replace('/', DIRECTORY_SEPARATOR, $path);
     }
 
+    public function dumpFile(string $filename, $content = ''): void
+    {
+        parent::dumpFile($filename, $content);
+    }
+
     /**
      * Gets the contents of a file.
      *
