@@ -28,6 +28,9 @@ jobs:
                     - "unchanged"
                     - "6.*.*"
                     - "7.*.*"
+                exclude:
+                    - php: "8.1"
+                      symfony: "7.*.*"
 
         steps:
             -   name: "Check out repository code"
