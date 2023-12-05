@@ -98,7 +98,7 @@ final class FS
      *
      * @throws IOException On any directory creation failure
      */
-    public static function mkdir(string|iterable $dirs, int $mode = 0o777): void
+    public static function mkdir(iterable|string $dirs, int $mode = 0o777): void
     {
         self::getInstance()->mkdir(...func_get_args());
     }
@@ -106,7 +106,7 @@ final class FS
     /**
      * Checks the existence of files or directories.
      */
-    public static function exists(string|iterable $files): bool
+    public static function exists(iterable|string $files): bool
     {
         return self::getInstance()->exists($files);
     }
@@ -119,7 +119,7 @@ final class FS
      *
      * @throws IOException When touch fails
      */
-    public static function touch(string|iterable $files, ?int $time = null, ?int $atime = null): void
+    public static function touch(iterable|string $files, ?int $time = null, ?int $atime = null): void
     {
         self::getInstance()->touch(...func_get_args());
     }
@@ -129,7 +129,7 @@ final class FS
      *
      * @throws IOException When removal fails
      */
-    public static function remove(string|iterable $files): void
+    public static function remove(iterable|string $files): void
     {
         self::getInstance()->remove(...func_get_args());
     }
@@ -143,7 +143,7 @@ final class FS
      *
      * @throws IOException When the change fails
      */
-    public static function chmod(string|iterable $files, int $mode, int $umask = 0o000, bool $recursive = false): void
+    public static function chmod(iterable|string $files, int $mode, int $umask = 0o000, bool $recursive = false): void
     {
         self::getInstance()->chmod(...func_get_args());
     }
@@ -156,7 +156,7 @@ final class FS
      *
      * @throws IOException When the change fails
      */
-    public static function chown(string|iterable $files, string|int $user, bool $recursive = false): void
+    public static function chown(iterable|string $files, int|string $user, bool $recursive = false): void
     {
         self::getInstance()->chown(...func_get_args());
     }
@@ -169,7 +169,7 @@ final class FS
      *
      * @throws IOException When the change fails
      */
-    public static function chgrp(string|iterable $files, string|int $group, bool $recursive = false): void
+    public static function chgrp(iterable|string $files, int|string $group, bool $recursive = false): void
     {
         self::getInstance()->chgrp(...func_get_args());
     }
@@ -203,7 +203,7 @@ final class FS
      * @throws FileNotFoundException When original file is missing or not a file
      * @throws IOException           When link fails, including if link already exists
      */
-    public static function hardlink(string $originFile, string|iterable $targetFiles): void
+    public static function hardlink(string $originFile, iterable|string $targetFiles): void
     {
         self::getInstance()->hardlink(...func_get_args());
     }
