@@ -22,7 +22,7 @@
         "ergebnis/composer-normalize": "^2.28",
         "infection/infection": "^0.26",
         "phpunit/phpunit": "^10.3",
-        "symfony/finder": "^6.3"
+        "symfony/finder": "^6.3 || ^7.0"
     },
     "prefer-stable": true,
     "autoload": {
