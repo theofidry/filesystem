@@ -59,7 +59,7 @@ use function str_replace;
 use function sys_get_temp_dir;
 use const DIRECTORY_SEPARATOR;
 
-final class FileSystem extends SymfonyFilesystem
+class FileSystem extends SymfonyFilesystem
 {
     /**
      * Returns whether a path is relative.

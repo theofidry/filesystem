@@ -56,10 +56,8 @@ use function func_get_args;
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Bernhard Schussek <bschussek@gmail.com>
  * @author Thomas Schulz <mail@king2500.net>
- *
- * @private
  */
-final class FS
+class FS
 {
     private static FileSystem $filesystem;
 
