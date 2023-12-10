@@ -5,6 +5,11 @@
          bootstrap="vendor/autoload.php"
          failOnRisky="true"
          failOnWarning="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         executionOrder="duration"
          cacheResultFile="dist/.phpunit.result.cache">
     <php>
         <ini name="error_reporting" value="-1"/>

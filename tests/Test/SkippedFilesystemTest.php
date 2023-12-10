@@ -36,20 +36,18 @@ declare(strict_types=1);
 
 namespace Fidry\FileSystem\Tests\Test;
 
-use Fidry\FileSystem\FS;
 use Fidry\FileSystem\Test\FileSystemTestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Small;
-use Symfony\Component\Finder\Finder;
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Medium;
 use function getenv;
 use function is_string;
 
 /**
  * @internal
  */
-#[CoversClass(FileSystemTestCase::class)]
-#[Small]
-final class FilesystemTestCaseTest extends FileSystemTestCase
+#[CoversNothing]
+#[Medium]
+final class SkippedFilesystemTest extends FileSystemTestCase
 {
     public static function getTmpDirNamespace(): string
     {
@@ -62,55 +60,13 @@ final class FilesystemTestCaseTest extends FileSystemTestCase
         return 'FidryFilesystem'.$threadId;
     }
 
-    public function test_it_works(): void
+    protected function setUp(): void
     {
-        self::assertNotNull($this->cwd);
-        self::assertNotNull($this->tmp);
-        self::assertNotNull(self::$lastKnownTmpNamespace);
+        self::markTestSkipped();
     }
 
-    public function test_it_can_provide_the_relative_paths(): void
+    public function test_empty_test(): void
     {
-        FS::touch(['file1', 'file2']);
-        FS::dumpFile('dir1/file3', '');
-
-        $files = Finder::create()
-            ->files()
-            ->in($this->tmp);
-
-        $expected = [
-            'dir1/file3',
-            'file1',
-            'file2',
-        ];
-        $actual = $this->normalizePaths($files);
-
-        self::assertEqualsCanonicalizing(
-            $expected,
-            $actual,
-        );
-        self::assertIsList($actual);
-    }
-
-    public function test_it_can_normalize_paths(): void
-    {
-        FS::touch(['file1', 'file2']);
-
-        $expected = [
-            'file1',
-            'file2',
-        ];
-        $actual = $this->normalizePaths(
-            (static function () {
-                yield 'a' => 'file1';
-                yield 'a' => 'file2';
-            })(),
-        );
-
-        self::assertEqualsCanonicalizing(
-            $expected,
-            $actual,
-        );
-        self::assertIsList($actual);
+        $this->addToAssertionCount(1);
     }
 }

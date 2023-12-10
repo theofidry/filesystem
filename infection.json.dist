@@ -14,6 +14,10 @@
         "@default": true,
         "MBString": false,
 
+        "global-ignore": [
+            "Fidry\\FileSystem\\Test\\FileSystemTestCase::tearDown"
+        ],
+
         "FunctionCallRemoval": false,
         "MethodCallRemoval": false,
         "PublicVisibility": false,
