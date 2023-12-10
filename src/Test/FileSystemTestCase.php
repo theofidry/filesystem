@@ -85,8 +85,12 @@ abstract class FileSystemTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        chdir($this->cwd);
-        FS::remove($this->tmp);
+        $wasSetupSkipped = '' === $this->cwd && '' === $this->tmp;
+
+        if (!$wasSetupSkipped) {
+            chdir($this->cwd);
+            FS::remove($this->tmp);
+        }
     }
 
     /**
