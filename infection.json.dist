@@ -18,6 +18,11 @@
             "Fidry\\FileSystem\\Test\\FileSystemTestCase::tearDown"
         ],
 
+        "FalseValue": {
+            "ignore": [
+                "Fidry\\FileSystem\\Test\\FileSystemTestCase::safeGetCurrentWorkingDirectory"
+            ]
+        },
         "FunctionCallRemoval": false,
         "MethodCallRemoval": false,
         "PublicVisibility": false,

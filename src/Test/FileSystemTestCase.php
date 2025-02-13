@@ -38,15 +38,18 @@ namespace Fidry\FileSystem\Test;
 
 use Fidry\FileSystem\FS;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Stringable;
 use function array_map;
 use function array_values;
+use function chdir;
 use function dirname;
+use function getcwd;
 use function is_array;
 use function iterator_to_array;
 use function natcasesort;
 use function natsort;
-use function Safe\getcwd;
+use function sprintf;
 use function str_replace;
 use const DIRECTORY_SEPARATOR;
 
@@ -74,13 +77,13 @@ abstract class FileSystemTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $this->cwd = getcwd();
+        $this->cwd = self::safeGetCurrentWorkingDirectory();
         $this->tmp = FS::makeTmpDir(
             static::getTmpDirNamespace(),
             static::class,
         );
         static::$lastKnownTmpNamespace = dirname($this->tmp);
-        chdir($this->tmp);
+        self::safeChdir($this->tmp);
     }
 
     protected function tearDown(): void
@@ -88,7 +91,7 @@ abstract class FileSystemTestCase extends TestCase
         $wasSetupSkipped = '' === $this->cwd && '' === $this->tmp;
 
         if (!$wasSetupSkipped) {
-            chdir($this->cwd);
+            self::safeChdir($this->cwd);
             FS::remove($this->tmp);
         }
     }
@@ -113,5 +116,30 @@ abstract class FileSystemTestCase extends TestCase
         natcasesort($normalizedPaths);
 
         return array_values($normalizedPaths);
+    }
+
+    private static function safeChdir(string $directory): void
+    {
+        $chdirResult = chdir($directory);
+
+        if (!$chdirResult) {
+            throw new RuntimeException(
+                sprintf(
+                    'Could not change the current working directory to "%s".',
+                    $directory,
+                ),
+            );
+        }
+    }
+
+    private static function safeGetCurrentWorkingDirectory(): string
+    {
+        $result = getcwd();
+
+        if (false === $result) {
+            throw new RuntimeException('Could not get the current working directory.');
+        }
+
+        return $result;
     }
 }
