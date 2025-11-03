@@ -1,9 +1,8 @@
 <?php
-
-/*
+/**
  * This code is licensed under the BSD 3-Clause License.
  *
- * Copyright (c) 2022, Théo FIDRY <theo.fidry@gmail.com>
+ * Copyright (c) 2017, Maks Rafalko
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,21 +33,12 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the box project.
- *
- * (c) Kevin Herrera <kevin@herrera.io>
- *     Théo Fidry <theo.fidry@gmail.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Fidry\FileSystem;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
-use Symfony\Component\Filesystem\Path;
+use Symfony\Component\Finder\Finder;
+use Traversable;
 use Webmozart\Assert\Assert;
 use function error_get_last;
 use function file_get_contents;
@@ -59,7 +49,10 @@ use function str_replace;
 use function sys_get_temp_dir;
 use const DIRECTORY_SEPARATOR;
 
-class FileSystem extends SymfonyFilesystem
+/**
+ * @internal
+ */
+interface FileSystem extends SymfonyFileSystem
 {
     /**
      * Returns whether a path is relative.
@@ -69,20 +62,9 @@ class FileSystem extends SymfonyFilesystem
      * @return bool returns true if the path is relative or empty, false if
      *              it is absolute
      */
-    public function isRelativePath(string $path): bool
-    {
-        return !$this->isAbsolutePath($path);
-    }
+    public function isRelativePath(string $path): bool;
 
-    public function escapePath(string $path): string
-    {
-        return str_replace('/', DIRECTORY_SEPARATOR, $path);
-    }
-
-    public function dumpFile(string $filename, $content = ''): void
-    {
-        parent::dumpFile($filename, $content);
-    }
+    public function escapePath(string $path): string;
 
     /**
      * Gets the contents of a file.
@@ -93,26 +75,7 @@ class FileSystem extends SymfonyFilesystem
      *
      * @return string File contents
      */
-    public function getFileContents(string $file): string
-    {
-        Assert::file($file);
-        Assert::readable($file);
-
-        if (false === ($contents = @file_get_contents($file))) {
-            throw new IOException(
-                sprintf(
-                    'Failed to read file "%s": %s.',
-                    $file,
-                    error_get_last()['message'],
-                ),
-                0,
-                null,
-                $file,
-            );
-        }
-
-        return $contents;
-    }
+    public function getFileContents(string $file): string;
 
     /**
      * Creates a temporary directory.
@@ -122,51 +85,18 @@ class FileSystem extends SymfonyFilesystem
      *
      * @return string the path to the created directory
      */
-    public function makeTmpDir(string $namespace, string $className): string
-    {
-        $shortClass = false !== ($pos = mb_strrpos($className, '\\'))
-            ? mb_substr($className, $pos + 1)
-            : $className;
-
-        $basePath = $this->getNamespacedTmpDir($namespace).'/'.$shortClass;
-
-        $result = false;
-        $attempts = 0;
-
-        do {
-            $tmpDir = $this->escapePath($basePath.random_int(10000, 99999));
-
-            if ($this->exists($tmpDir)) {
-                ++$attempts;
-
-                continue;
-            }
-
-            try {
-                $this->mkdir($tmpDir, 0o777);
-
-                $result = true;
-            } catch (IOException) {
-                ++$attempts;
-            }
-        } while (false === $result && $attempts <= 10);
-
-        return $tmpDir;
-    }
+    public function makeTmpDir(string $namespace, string $className): string;
 
     /**
      * Gets a namespaced temporary directory.
      *
      * @param string $namespace the directory path in the system's temporary directory
      */
-    public function getNamespacedTmpDir(string $namespace): string
-    {
-        // Usage of realpath() is important if the temporary directory is a
-        // symlink to another directory (e.g. /var => /private/var on some Macs)
-        // We want to know the real path to avoid comparison failures with
-        // code that uses real paths only
-        $systemTempDir = str_replace('\\', '/', realpath(sys_get_temp_dir()));
+    public function getNamespacedTmpDir(string $namespace): string;
 
-        return $systemTempDir.'/'.$namespace;
-    }
+    public function isReadable(string $filename): bool;
+    public function isReadableFile(string $filename): bool;
+    public function isReadableDirectory(string $filename): bool;
+
+    public function createFinder(): Finder;
 }

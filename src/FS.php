@@ -59,18 +59,18 @@ use function func_get_args;
  */
 class FS
 {
-    private static FileSystem $filesystem;
+    private static NativeFileSystem $filesystem;
 
-    public static function setInstance(FileSystem $filesystem): void
+    public static function setInstance(NativeFileSystem $filesystem): void
     {
         self::$filesystem = $filesystem;
     }
 
-    public static function getInstance(): FileSystem
+    public static function getInstance(): NativeFileSystem
     {
         /** @psalm-suppress RedundantPropertyInitializationCheck */
         if (!isset(self::$filesystem)) {
-            self::$filesystem = new FileSystem();
+            self::$filesystem = new NativeFileSystem();
         }
 
         return self::$filesystem;
@@ -352,4 +352,6 @@ class FS
     {
         return self::getInstance()->getNamespacedTmpDir(...func_get_args());
     }
+
+    // TODO: add here...
 }
