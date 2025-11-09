@@ -65,6 +65,8 @@ interface SymfonyFileSystem
     /**
      * Creates a directory recursively.
      *
+     * @param string|iterable<string> $dirs
+     *
      * @throws IOException On any directory creation failure
      *
      * @return void
@@ -73,11 +75,13 @@ interface SymfonyFileSystem
 
     /**
      * Checks the existence of files or directories.
+     *
+     * @param string|iterable<string> $files
      */
     public function exists(string|iterable $files): bool;
 
     /**
-     * Sets access and modification time of file.
+     * Sets access and modification time of a file.
      *
      * @param string|iterable<string> $files
      * @param int|null                $time  The touch time as a Unix timestamp, if not supplied the current system time is used
@@ -92,6 +96,8 @@ interface SymfonyFileSystem
     /**
      * Removes files or directories.
      *
+     * @param string|iterable<string> $files
+     *
      * @throws IOException When removal fails
      *
      * @return void
@@ -101,9 +107,10 @@ interface SymfonyFileSystem
     /**
      * Change mode for an array of files or directories.
      *
-     * @param int  $mode      The new mode (octal)
-     * @param int  $umask     The mode mask (octal)
-     * @param bool $recursive Whether change the mod recursively or not
+     * @param string|iterable<string> $files
+     * @param int                     $mode      The new mode (octal)
+     * @param int                     $umask     The mode mask (octal)
+     * @param bool                    $recursive Whether change the mod recursively or not
      *
      * @throws IOException When the change fails
      *
@@ -112,14 +119,15 @@ interface SymfonyFileSystem
     public function chmod(string|iterable $files, int $mode, int $umask = 0o000, bool $recursive = false);
 
     /**
-     * Change the owner of an array of files or directories.
+     * Change the owner of file(s) and/or directory(ies).
      *
      * This method always throws on Windows, as the underlying PHP function is not supported.
      *
      * @see https://www.php.net/chown
      *
-     * @param string|int $user      A user name or number
-     * @param bool       $recursive Whether change the owner recursively or not
+     * @param string|iterable<string> $files
+     * @param string|int              $user      A username or number
+     * @param bool                    $recursive Whether change the owner recursively or not
      *
      * @throws IOException When the change fails
      *
@@ -128,17 +136,17 @@ interface SymfonyFileSystem
     public function chown(string|iterable $files, string|int $user, bool $recursive = false);
 
     /**
-     * Change the group of an array of files or directories.
+     * Change the group of file(s) and/or directory(ies).
      *
      * This method always throws on Windows, as the underlying PHP function is not supported.
      *
      * @see https://www.php.net/chgrp
      *
      * @param string|iterable<string> $files
-     * @param string|int              $group     A group name or number
-     * @param bool                    $recursive Whether change the group recursively or not
+     * @param string|int              $group     A group name or number.
+     * @param bool                    $recursive Whether change the group recursively or not.
      *
-     * @throws IOException When the change fails
+     * @throws IOException When the change fails.
      *
      * @return void
      */
@@ -147,8 +155,8 @@ interface SymfonyFileSystem
     /**
      * Renames a file or a directory.
      *
-     * @throws IOException When target file or directory already exists
-     * @throws IOException When origin cannot be renamed
+     * @throws IOException When the target file or directory already exists.
+     * @throws IOException When the origin cannot be renamed.
      *
      * @return void
      */
@@ -157,7 +165,7 @@ interface SymfonyFileSystem
     /**
      * Creates a symbolic link or copy a directory.
      *
-     * @throws IOException When symlink fails
+     * @throws IOException When symlink fails.
      *
      * @return void
      */
@@ -166,10 +174,10 @@ interface SymfonyFileSystem
     /**
      * Creates a hard link, or several hard links to a file.
      *
-     * @param string|string[] $targetFiles The target file(s)
+     * @param string|iterable<string> $targetFiles The target file(s)
      *
-     * @throws FileNotFoundException When original file is missing or not a file
-     * @throws IOException           When link fails, including if link already exists
+     * @throws FileNotFoundException When the original file is missing or not a file.
+     * @throws IOException           When the link fails, including if the link already exists.
      *
      * @return void
      */
