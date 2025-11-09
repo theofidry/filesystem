@@ -362,4 +362,24 @@ class FS
     {
         return self::getInstance()->getNamespacedTmpDir(...func_get_args());
     }
+
+    public function isReadableFile(string $filename): bool
+    {
+        return self::getInstance()->isReadable(...func_get_args());
+    }
+
+    public function isReadableDirectory(string $filename): bool
+    {
+        return self::getInstance()->isReadableDirectory(...func_get_args());
+    }
+
+    /**
+     * Tells whether a file exists and is readable.
+     *
+     * @throws IOException When Window's path is longer than 258 characters
+     */
+    public function isReadable(string $filename): bool
+    {
+        return self::getInstance()->isReadable(...func_get_args());
+    }
 }
