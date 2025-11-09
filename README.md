@@ -2,9 +2,25 @@
 
 This is a tiny wrapper around the [Symfony filesystem]. It provides:
 
-- A new class `FileSystem` (extending the Symfony one) which has a few more methods.
-- A `FS` static class for when you are not interested of using dependency injection for your filesystem layer.
+- An interface `FileSystem` that contains all the methods from the Symfony public API and a few additions.
+- A class `NativeFileSystem` implementing `FileSystem`.
+- A readonly implementation `ReadOnlyFileSystem`. It can be used to either do no write operation or to bailout on write
+  operations. Note that for a better read/write API, a library such as [Flysystem] is recommended.
+- A `FS` static class for when you are not interested of using dependency injection for your filesystem layer or for
+  usage within tests.
+- A `SplFileInfoFactory` utility to create a Symfony Finder `SplFileInfo` instance without using `Finder`.
 - A PHPUnit `FileSystemTestCase` which lets you easily write a file-system dependent test.
+- An immutable builder `SplFileInfoBuilder` to easily create a dummy Symfony Finder `SplFileInfo` instance.
+
+## Why the utilities for the Symfony Finder `SplFileInfo`?
+
+`Symfony\Component\Finder\SplFileInfo` distinguish itself from `SplFileInfo` in two ways:
+
+- Files found by a finder are relative to the root directory. Hence, the relative path and pathname.
+- The `::getContents()` method.
+
+Sometimes you are not interested in the relative path API part at all, but using `SplFileInfo` would be
+too annoying due to the missing `::getContents()` method.
 
 
 ## Usage
@@ -62,5 +78,6 @@ final class MyAppFileSystemTest extends FileSystemTestCase
 [GNU Make] is your friend. Try `make` or `make help`!.
 
 
+[Flysystem]: https://flysystem.thephpleague.com/docs/
 [Symfony filesystem]: https://symfony.com/doc/current/components/filesystem.html
 [GNU Make]: https://www.gnu.org/software/make/
