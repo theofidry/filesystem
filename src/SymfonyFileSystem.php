@@ -250,4 +250,11 @@ interface SymfonyFileSystem
      * @return void
      */
     public function appendToFile(string $filename, $content, /*bool $lock = false*/);
+
+    /**
+     * Returns the content of a file as a string.
+     *
+     * @throws IOException If the file cannot be read
+     */
+    public function readFile(string $filename): string;
 }
