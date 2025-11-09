@@ -331,6 +331,16 @@ class FS
     }
 
     /**
+     * Returns the content of a file as a string.
+     *
+     * @throws IOException If the file cannot be read
+     */
+    public static function readfile(string $file): string
+    {
+        return self::getInstance()->readFile(...func_get_args());
+    }
+
+    /**
      * Creates a temporary directory.
      *
      * @param string $namespace the directory path in the system's temporary directory
