@@ -21,7 +21,7 @@
         "bamarni/composer-bin-plugin": "^1.4",
         "ergebnis/composer-normalize": "^2.28",
         "infection/infection": ">=0.26",
-        "phpunit/phpunit": "^12"
+        "phpunit/phpunit": "^11 || ^12"
     },
     "prefer-stable": true,
     "autoload": {
