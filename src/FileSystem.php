@@ -47,6 +47,7 @@ declare(strict_types=1);
 namespace Fidry\FileSystem;
 
 use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Finder\Finder;
 
 interface FileSystem extends SymfonyFileSystem
 {
@@ -91,4 +92,17 @@ interface FileSystem extends SymfonyFileSystem
      * @param string $namespace the directory path in the system's temporary directory
      */
     public function getNamespacedTmpDir(string $namespace): string;
+
+    /**
+     * Tells whether a file exists and is readable.
+     *
+     * @throws IOException When Window's path is longer than 258 characters
+     */
+    public function isReadable(string $filename): bool;
+
+    public function isReadableFile(string $filename): bool;
+
+    public function isReadableDirectory(string $filename): bool;
+
+    public function createFinder(): Finder;
 }
