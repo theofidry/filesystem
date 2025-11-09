@@ -52,11 +52,11 @@ use function ksort;
 #[CoversNothing]
 final class FSImplementationTest extends TestCase
 {
-    private const array NON_SYNCHRONIZED_FILESYSTEM_METHOD_NAMES = [
+    private const NON_SYNCHRONIZED_FILESYSTEM_METHOD_NAMES = [
         'createFinder',
     ];
 
-    private const array NON_SYNCHRONIZED_FS_METHOD_NAMES = [
+    private const NON_SYNCHRONIZED_FS_METHOD_NAMES = [
         'getInstance',
         'setInstance',
     ];
