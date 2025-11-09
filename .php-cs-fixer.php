@@ -28,7 +28,7 @@ $header = trim(
     ),
 ));
 
-$config = new FidryConfig($header, 83_000);
+$config = new FidryConfig($header, 82_000);
 $config->addRules([
     // TODO: see if this rule can be removed once bumping to Symfony 7+
     'no_superfluous_phpdoc_tags' => false,

@@ -53,7 +53,7 @@ use function iterator_to_array;
 #[CoversClass(SplFileInfoFactory::class)]
 final class SplFileInfoFactoryTest extends TestCase
 {
-    public const string FIXTURE_DIR = __DIR__.'/Fixtures';
+    public const FIXTURE_DIR = __DIR__.'/Fixtures';
 
     #[DataProvider('fromPathProvider')]
     public function test_it_can_create_a_file_info_from_a_path(
