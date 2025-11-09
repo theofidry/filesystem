@@ -34,48 +34,20 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the box project.
- *
- * (c) Kevin Herrera <kevin@herrera.io>
- *     Théo Fidry <theo.fidry@gmail.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Fidry\FileSystem;
 
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Filesystem\Path;
 use Traversable;
-use function func_get_args;
 
 /**
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Bernhard Schussek <bschussek@gmail.com>
- * @author Thomas Schulz <mail@king2500.net>
+ * Is an interface that captures all the methods of the Symfony Filesystem. Purely internal, to facilitate
+ * moving this to Symfony eventually.
+ *
+ * @internal
  */
-class FS
+interface SymfonyFileSystem
 {
-    private static NativeFileSystem $filesystem;
-
-    public static function setInstance(NativeFileSystem $filesystem): void
-    {
-        self::$filesystem = $filesystem;
-    }
-
-    public static function getInstance(): NativeFileSystem
-    {
-        /** @psalm-suppress RedundantPropertyInitializationCheck */
-        if (!isset(self::$filesystem)) {
-            self::$filesystem = new NativeFileSystem();
-        }
-
-        return self::$filesystem;
-    }
-
     /**
      * Copies a file.
      *
@@ -86,51 +58,37 @@ class FS
      * @throws FileNotFoundException When originFile doesn't exist
      * @throws IOException           When copy fails
      */
-    public static function copy(string $originFile, string $targetFile, bool $overwriteNewerFiles = false): void
-    {
-        self::getInstance()->copy(...func_get_args());
-    }
+    public function copy(string $originFile, string $targetFile, bool $overwriteNewerFiles = false): void;
 
     /**
      * Creates a directory recursively.
      *
      * @throws IOException On any directory creation failure
      */
-    public static function mkdir(iterable|string $dirs, int $mode = 0o777): void
-    {
-        self::getInstance()->mkdir(...func_get_args());
-    }
+    public function mkdir(string|iterable $dirs, int $mode = 0o777): void;
 
     /**
      * Checks the existence of files or directories.
      */
-    public static function exists(iterable|string $files): bool
-    {
-        return self::getInstance()->exists($files);
-    }
+    public function exists(string|iterable $files): bool;
 
     /**
      * Sets access and modification time of file.
      *
-     * @param int|null $time  The touch time as a Unix timestamp, if not supplied the current system time is used
-     * @param int|null $atime The access time as a Unix timestamp, if not supplied the current system time is used
+     * @param string|iterable<string> $files
+     * @param int|null                $time  The touch time as a Unix timestamp, if not supplied the current system time is used
+     * @param int|null                $atime The access time as a Unix timestamp, if not supplied the current system time is used
      *
      * @throws IOException When touch fails
      */
-    public static function touch(iterable|string $files, ?int $time = null, ?int $atime = null): void
-    {
-        self::getInstance()->touch(...func_get_args());
-    }
+    public function touch(string|iterable $files, ?int $time = null, ?int $atime = null): void;
 
     /**
      * Removes files or directories.
      *
      * @throws IOException When removal fails
      */
-    public static function remove(iterable|string $files): void
-    {
-        self::getInstance()->remove(...func_get_args());
-    }
+    public function remove(string|iterable $files): void;
 
     /**
      * Change mode for an array of files or directories.
@@ -141,36 +99,36 @@ class FS
      *
      * @throws IOException When the change fails
      */
-    public static function chmod(iterable|string $files, int $mode, int $umask = 0o000, bool $recursive = false): void
-    {
-        self::getInstance()->chmod(...func_get_args());
-    }
+    public function chmod(string|iterable $files, int $mode, int $umask = 0o000, bool $recursive = false): void;
 
     /**
      * Change the owner of an array of files or directories.
+     *
+     * This method always throws on Windows, as the underlying PHP function is not supported.
+     *
+     * @see https://www.php.net/chown
      *
      * @param string|int $user      A user name or number
      * @param bool       $recursive Whether change the owner recursively or not
      *
      * @throws IOException When the change fails
      */
-    public static function chown(iterable|string $files, int|string $user, bool $recursive = false): void
-    {
-        self::getInstance()->chown(...func_get_args());
-    }
+    public function chown(string|iterable $files, string|int $user, bool $recursive = false): void;
 
     /**
      * Change the group of an array of files or directories.
      *
-     * @param string|int $group     A group name or number
-     * @param bool       $recursive Whether change the group recursively or not
+     * This method always throws on Windows, as the underlying PHP function is not supported.
+     *
+     * @see https://www.php.net/chgrp
+     *
+     * @param string|iterable<string> $files
+     * @param string|int              $group     A group name or number
+     * @param bool                    $recursive Whether change the group recursively or not
      *
      * @throws IOException When the change fails
      */
-    public static function chgrp(iterable|string $files, int|string $group, bool $recursive = false): void
-    {
-        self::getInstance()->chgrp(...func_get_args());
-    }
+    public function chgrp(string|iterable $files, string|int $group, bool $recursive = false): void;
 
     /**
      * Renames a file or a directory.
@@ -178,20 +136,14 @@ class FS
      * @throws IOException When target file or directory already exists
      * @throws IOException When origin cannot be renamed
      */
-    public static function rename(string $origin, string $target, bool $overwrite = false): void
-    {
-        self::getInstance()->rename(...func_get_args());
-    }
+    public function rename(string $origin, string $target, bool $overwrite = false): void;
 
     /**
      * Creates a symbolic link or copy a directory.
      *
      * @throws IOException When symlink fails
      */
-    public static function symlink(string $originDir, string $targetDir, bool $copyOnWindows = false): void
-    {
-        self::getInstance()->symlink(...func_get_args());
-    }
+    public function symlink(string $originDir, string $targetDir, bool $copyOnWindows = false): void;
 
     /**
      * Creates a hard link, or several hard links to a file.
@@ -201,10 +153,7 @@ class FS
      * @throws FileNotFoundException When original file is missing or not a file
      * @throws IOException           When link fails, including if link already exists
      */
-    public static function hardlink(string $originFile, iterable|string $targetFiles): void
-    {
-        self::getInstance()->hardlink(...func_get_args());
-    }
+    public function hardlink(string $originFile, string|iterable $targetFiles): void;
 
     /**
      * Resolves links in paths.
@@ -217,18 +166,12 @@ class FS
      *      - if $path does not exist, returns null
      *      - if $path exists, returns its absolute fully resolved final version
      */
-    public static function readlink(string $path, bool $canonicalize = false): ?string
-    {
-        return self::getInstance()->readlink(...func_get_args());
-    }
+    public function readlink(string $path, bool $canonicalize = false): ?string;
 
     /**
      * Given an existing path, convert it to a path relative to a given starting path.
      */
-    public static function makePathRelative(string $endPath, string $startPath): string
-    {
-        return self::getInstance()->makePathRelative(...func_get_args());
-    }
+    public function makePathRelative(string $endPath, string $startPath): string;
 
     /**
      * Mirrors a directory to another.
@@ -245,20 +188,14 @@ class FS
      *                                   - $options['copy_on_windows'] Whether to copy files instead of links on Windows (see symlink(), defaults to false)
      *                                   - $options['delete'] Whether to delete files that are not in the source directory (defaults to false)
      *
-     * @throws IOException When file type is unknown
+     * @throws IOException When a file type is unknown
      */
-    public static function mirror(string $originDir, string $targetDir, ?Traversable $iterator = null, array $options = []): void
-    {
-        self::getInstance()->mirror(...func_get_args());
-    }
+    public function mirror(string $originDir, string $targetDir, ?Traversable $iterator = null, array $options = []): void;
 
     /**
      * Returns whether the file path is an absolute path.
      */
-    public static function isAbsolutePath(string $file): bool
-    {
-        return self::getInstance()->isAbsolutePath(...func_get_args());
-    }
+    public function isAbsolutePath(string $file): bool;
 
     /**
      * Creates a temporary file with support for custom stream wrappers.
@@ -269,10 +206,7 @@ class FS
      *
      * @return string The new temporary filename (with path), or throw an exception on failure
      */
-    public static function tempnam(string $dir, string $prefix, string $suffix = ''): string
-    {
-        return self::getInstance()->tempnam(...func_get_args());
-    }
+    public function tempnam(string $dir, string $prefix, string $suffix = ''): string;
 
     /**
      * Atomically dumps content into a file.
@@ -281,75 +215,22 @@ class FS
      *
      * @throws IOException if the file cannot be written to
      */
-    public static function dumpFile(string $filename, $content = ''): void
-    {
-        self::getInstance()->dumpFile(...func_get_args());
-    }
+    public function dumpFile(string $filename, $content): void;
 
     /**
      * Appends content to an existing file.
      *
      * @param string|resource $content The content to append
+     * @param bool            $lock    Whether the file should be locked when writing to it
      *
      * @throws IOException If the file is not writable
      */
-    public static function appendToFile(string $filename, $content/* , bool $lock = false */): void
-    {
-        self::getInstance()->appendToFile(...func_get_args());
-    }
+    public function appendToFile(string $filename, $content, bool $lock = false): void;
 
     /**
-     * Returns whether a path is relative.
-     *
-     * @param string $path a path string
-     *
-     * @return bool returns true if the path is relative or empty, false if
-     *              it is absolute
-     */
-    public static function isRelativePath(string $path): bool
-    {
-        return self::getInstance()->isRelativePath(...func_get_args());
-    }
-
-    public static function escapePath(string $path): string
-    {
-        return self::getInstance()->escapePath(...func_get_args());
-    }
-
-    /**
-     * Gets the contents of a file.
-     *
-     * @param string $file File path
+     * Returns the content of a file as a string.
      *
      * @throws IOException If the file cannot be read
-     *
-     * @return string File contents
      */
-    public static function getFileContents(string $file): string
-    {
-        return self::getInstance()->getFileContents(...func_get_args());
-    }
-
-    /**
-     * Creates a temporary directory.
-     *
-     * @param string $namespace the directory path in the system's temporary directory
-     * @param string $className the name of the test class
-     *
-     * @return string the path to the created directory
-     */
-    public static function makeTmpDir(string $namespace, string $className): string
-    {
-        return self::getInstance()->makeTmpDir(...func_get_args());
-    }
-
-    /**
-     * Gets a namespaced temporary directory.
-     *
-     * @param string $namespace the directory path in the system's temporary directory
-     */
-    public static function getNamespacedTmpDir(string $namespace): string
-    {
-        return self::getInstance()->getNamespacedTmpDir(...func_get_args());
-    }
+    public function readFile(string $filename): string;
 }
