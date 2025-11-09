@@ -47,8 +47,6 @@ declare(strict_types=1);
 namespace Fidry\FileSystem;
 
 use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
-use Symfony\Component\Filesystem\Path;
 
 interface FileSystem extends SymfonyFilesystem
 {

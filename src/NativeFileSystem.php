@@ -47,8 +47,7 @@ declare(strict_types=1);
 namespace Fidry\FileSystem;
 
 use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
-use Symfony\Component\Filesystem\Path;
+use Symfony\Component\Filesystem\Filesystem as NativeSymfonyFilesystem;
 use Webmozart\Assert\Assert;
 use function error_get_last;
 use function file_get_contents;
@@ -59,16 +58,8 @@ use function str_replace;
 use function sys_get_temp_dir;
 use const DIRECTORY_SEPARATOR;
 
-class NativeFileSystem extends SymfonyFilesystem
+class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
 {
-    /**
-     * Returns whether a path is relative.
-     *
-     * @param string $path a path string
-     *
-     * @return bool returns true if the path is relative or empty, false if
-     *              it is absolute
-     */
     public function isRelativePath(string $path): bool
     {
         return !$this->isAbsolutePath($path);
@@ -84,15 +75,6 @@ class NativeFileSystem extends SymfonyFilesystem
         parent::dumpFile($filename, $content);
     }
 
-    /**
-     * Gets the contents of a file.
-     *
-     * @param string $file File path
-     *
-     * @throws IOException If the file cannot be read
-     *
-     * @return string File contents
-     */
     public function getFileContents(string $file): string
     {
         Assert::file($file);
@@ -114,14 +96,6 @@ class NativeFileSystem extends SymfonyFilesystem
         return $contents;
     }
 
-    /**
-     * Creates a temporary directory.
-     *
-     * @param string $namespace the directory path in the system's temporary directory
-     * @param string $className the name of the test class
-     *
-     * @return string the path to the created directory
-     */
     public function makeTmpDir(string $namespace, string $className): string
     {
         $shortClass = false !== ($pos = mb_strrpos($className, '\\'))
@@ -154,11 +128,6 @@ class NativeFileSystem extends SymfonyFilesystem
         return $tmpDir;
     }
 
-    /**
-     * Gets a namespaced temporary directory.
-     *
-     * @param string $namespace the directory path in the system's temporary directory
-     */
     public function getNamespacedTmpDir(string $namespace): string
     {
         // Usage of realpath() is important if the temporary directory is a
