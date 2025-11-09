@@ -51,8 +51,11 @@ use Symfony\Component\Filesystem\Filesystem as NativeSymfonyFilesystem;
 use Webmozart\Assert\Assert;
 use function error_get_last;
 use function file_get_contents;
+use function function_exists;
 use function random_int;
 use function realpath;
+use function restore_error_handler;
+use function set_error_handler;
 use function sprintf;
 use function str_replace;
 use function sys_get_temp_dir;
@@ -60,6 +63,8 @@ use const DIRECTORY_SEPARATOR;
 
 class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
 {
+    private static ?string $lastError = null;
+
     public function isRelativePath(string $path): bool
     {
         return !$this->isAbsolutePath($path);
@@ -137,5 +142,52 @@ class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
         $systemTempDir = str_replace('\\', '/', realpath(sys_get_temp_dir()));
 
         return $systemTempDir.'/'.$namespace;
+    }
+
+    // TODO: to remove the implementation once using Symfony 7.4+
+    public function readFile(string $filename): string
+    {
+        if (is_dir($filename)) {
+            throw new IOException(sprintf('Failed to read file "%s": File is a directory.', $filename));
+        }
+
+        $content = self::box('file_get_contents', $filename);
+        if (false === $content) {
+            throw new IOException(sprintf('Failed to read file "%s": ', $filename).self::$lastError, 0, null, $filename);
+        }
+
+        return $content;
+    }
+
+    // TODO: to remove the implementation once using Symfony 7.4+
+    private static function box(string $func, mixed ...$args): mixed
+    {
+        self::assertFunctionExists($func);
+
+        self::$lastError = null;
+        set_error_handler(self::handleError(...));
+
+        try {
+            return $func(...$args);
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    // TODO: to remove the implementation once using Symfony 7.4+
+    private static function assertFunctionExists(string $func): void
+    {
+        if (!function_exists($func)) {
+            throw new IOException(sprintf('Unable to perform filesystem operation because the "%s()" function has been disabled.', $func));
+        }
+    }
+
+    /**
+     * TODO: to remove the implementation once using Symfony 7.4+.
+     * @internal
+     */
+    public static function handleError(int $type, string $msg): void
+    {
+        self::$lastError = $msg;
     }
 }
