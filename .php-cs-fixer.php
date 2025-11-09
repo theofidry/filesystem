@@ -28,7 +28,13 @@ $header = trim(
     ),
 ));
 
-$config = new FidryConfig($header, 81_000);
+$config = new FidryConfig($header, 83_000);
+$config->addRules([
+    // TODO: see if this rule can be removed once bumping to Symfony 7+
+    'no_superfluous_phpdoc_tags' => false,
+    'phpdoc_no_empty_return' => false,
+    'void_return' => false,
+]);
 $config->setCacheFile(__DIR__.'/var/.php-cs-fixer.cache');
 
 return $config->setFinder($finder);
