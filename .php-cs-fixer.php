@@ -16,6 +16,7 @@ $finder = Finder::create()
     ->in(__DIR__)
     ->exclude([
         'dist',
+        'var',
     ]);
 
 $header = trim(
