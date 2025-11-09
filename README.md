@@ -6,6 +6,7 @@ This is a tiny wrapper around the [Symfony filesystem]. It provides:
 - A class `NativeFileSystem` implementing `FileSystem`.
 - A readonly implementation `ReadOnlyFileSystem`. It can be used to either do no write operation or to bailout on write
   operations. Note that for a better read/write API, a library such as [Flysystem] is recommended.
+- A `FakeFileSystem` implementation.
 - A `FS` static class for when you are not interested of using dependency injection for your filesystem layer or for
   usage within tests.
 - A `SplFileInfoFactory` utility to create a Symfony Finder `SplFileInfo` instance without using `Finder`.
