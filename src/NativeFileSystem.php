@@ -48,10 +48,14 @@ namespace Fidry\FileSystem;
 
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem as NativeSymfonyFilesystem;
+use Symfony\Component\Finder\Finder;
 use Webmozart\Assert\Assert;
 use function error_get_last;
 use function file_get_contents;
 use function function_exists;
+use function is_dir;
+use function is_file;
+use function is_readable;
 use function random_int;
 use function realpath;
 use function restore_error_handler;
@@ -60,6 +64,7 @@ use function sprintf;
 use function str_replace;
 use function sys_get_temp_dir;
 use const DIRECTORY_SEPARATOR;
+use const PHP_MAXPATHLEN;
 
 class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
 {
@@ -157,6 +162,44 @@ class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
         }
 
         return $content;
+    }
+
+    public function isReadableFile(string $filename): bool
+    {
+        return $this->isReadable($filename) && is_file($filename);
+    }
+
+    public function isReadableDirectory(string $filename): bool
+    {
+        return $this->isReadable($filename) && is_dir($filename);
+    }
+
+    public function createFinder(): Finder
+    {
+        return Finder::create();
+    }
+
+    /**
+     * Copy/pasted as is from the parent which is private.
+     * Tells whether a file exists and is readable.
+     *
+     * @throws IOException When Window's path is longer than 258 characters
+     */
+    public function isReadable(string $filename): bool
+    {
+        $maxPathLength = PHP_MAXPATHLEN - 2;
+
+        if (mb_strlen($filename) > $maxPathLength) {
+            throw new IOException(
+                sprintf(
+                    'Could not check if file is readable because path length exceeds %d characters.',
+                    $maxPathLength,
+                ),
+                path: $filename,
+            );
+        }
+
+        return is_readable($filename);
     }
 
     // TODO: to remove the implementation once using Symfony 7.4+
