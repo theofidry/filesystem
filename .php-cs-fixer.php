@@ -16,6 +16,7 @@ $finder = Finder::create()
     ->in(__DIR__)
     ->exclude([
         'dist',
+        'var',
     ]);
 
 $header = trim(
@@ -28,6 +29,6 @@ $header = trim(
 ));
 
 $config = new FidryConfig($header, 81_000);
-$config->setCacheFile(__DIR__.'/dist/.php-cs-fixer.cache');
+$config->setCacheFile(__DIR__.'/var/.php-cs-fixer.cache');
 
 return $config->setFinder($finder);
