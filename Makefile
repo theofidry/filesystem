@@ -70,7 +70,7 @@ php_cs_fixer: $(PHP_CS_FIXER_BIN)
 
 .PHONY: php_cs_fixer_lint
 php_cs_fixer_lint: $(PHP_CS_FIXER_BIN) var
-	$(PHP_CS_FIXER)
+	$(PHP_CS_FIXER) --dry-run
 
 .PHONY: rector
 rector: $(RECTOR_BIN)
