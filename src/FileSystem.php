@@ -48,7 +48,7 @@ namespace Fidry\FileSystem;
 
 use Symfony\Component\Filesystem\Exception\IOException;
 
-interface FileSystem extends SymfonyFilesystem
+interface FileSystem extends SymfonyFileSystem
 {
     /**
      * Returns whether a path is relative.
