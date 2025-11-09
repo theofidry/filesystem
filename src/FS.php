@@ -59,14 +59,14 @@ use function func_get_args;
  */
 class FS
 {
-    private static NativeFileSystem $filesystem;
+    private static FileSystem $filesystem;
 
-    public static function setInstance(NativeFileSystem $filesystem): void
+    public static function setInstance(FileSystem $filesystem): void
     {
         self::$filesystem = $filesystem;
     }
 
-    public static function getInstance(): NativeFileSystem
+    public static function getInstance(): FileSystem
     {
         /** @psalm-suppress RedundantPropertyInitializationCheck */
         if (!isset(self::$filesystem)) {
