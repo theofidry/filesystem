@@ -335,7 +335,7 @@ class FS
      *
      * @throws IOException If the file cannot be read
      */
-    public static function readfile(string $file): string
+    public static function readFile(string $file): string
     {
         return self::getInstance()->readFile(...func_get_args());
     }
