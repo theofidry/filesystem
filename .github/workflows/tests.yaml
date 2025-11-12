@@ -16,7 +16,7 @@ concurrency:
 jobs:
     tests:
         runs-on: "${{ matrix.operating-system }}"
-        name: "Tests with PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }} on ${{ matrix.runs-on }}"
+        name: "Tests with PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }} on ${{ matrix.operating-system }}"
         strategy:
             fail-fast: true
             matrix:
