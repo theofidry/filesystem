@@ -37,6 +37,7 @@ declare(strict_types=1);
 namespace Fidry\FileSystem\Tests\Finder;
 
 use Fidry\FileSystem\Finder\SplFileInfoFactory;
+use Fidry\FileSystem\FS;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -116,8 +117,8 @@ final class SplFileInfoFactoryTest extends TestCase
             self::FIXTURE_DIR.'/deep',
             Finder::create()
                 ->files()
-                ->path('nested/structure/deep_file.php')
-                ->in(self::FIXTURE_DIR.'/deep'),
+                ->path(FS::escapePath('nested/structure/deep_file.php'))
+                ->in(FS::escapePath(self::FIXTURE_DIR.'/deep')),
         ];
 
         yield 'file with parent directory as base path' => [

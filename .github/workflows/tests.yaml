@@ -15,11 +15,12 @@ concurrency:
 
 jobs:
     tests:
-        runs-on: "ubuntu-latest"
-        name: "Tests with PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }}"
+        runs-on: "${{ matrix.operating-system }}"
+        name: "Tests with PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }} on ${{ matrix.operating-system }}"
         strategy:
             fail-fast: true
             matrix:
+                operating-system: [ "ubuntu-latest" ]
                 php:
                     - "8.2"
                     - "8.3"
@@ -31,6 +32,11 @@ jobs:
                 dependency-versions:
                     - "highest"
                     - "lowest"
+                include:
+                    - operating-system: "windows-latest"
+                      php: "8.4"
+                      dependency-versions: "highest"
+                      symfony: "unchanged"
 
         steps:
             -   name: "Check out repository code"
