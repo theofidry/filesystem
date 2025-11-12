@@ -66,13 +66,10 @@ interface FileSystem extends SymfonyFileSystem
     public function dumpFile(string $filename, $content = ''): void;
 
     /**
-     * Gets the contents of a file.
-     *
-     * @param string $file File path
+     * @deprecated Use the `::readFile()` method. Deprecated since 2.0 and it will be removed in 3.0.
+     * @see readFile
      *
      * @throws IOException If the file cannot be read
-     *
-     * @return string File contents
      */
     public function getFileContents(string $file): string;
 
