@@ -52,8 +52,8 @@ use Symfony\Component\Finder\Finder;
 interface FileSystem extends SymfonyFileSystem
 {
     /**
-     * @deprecated Deprecated since 2.0. Use `Path::isRelativePath()` instead. Will be removed in 3.0.
-     * @see Path::isRelativePath
+     * @deprecated Deprecated since 2.0. Use `Path::isRelative()` instead. Will be removed in 3.0.
+     * @see Path::isRelative
      */
     public function isRelativePath(string $path): bool;
 
