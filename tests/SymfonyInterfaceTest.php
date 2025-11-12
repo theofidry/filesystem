@@ -69,6 +69,12 @@ final class SymfonyInterfaceTest extends TestCase
             ),
         );
 
+        // This is only available as of symfony/filesystem 7.1, but backported
+        // in this library.
+        if (!in_array('readFile', $methodNames, true)) {
+            $methodNames[] = 'readFile';
+        }
+
         ksort($methodNames);
 
         return array_values($methodNames);

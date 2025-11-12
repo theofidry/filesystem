@@ -62,8 +62,9 @@ The Symfony Finder `SplFileInfo` distinguish itself from `\SplFileInfo` in two w
 - Files found by a finder are relative to the root directory. Hence, the relative path and pathname.
 - The `::getContents()` method.
 
-Prior to Symfony 6.2, the `::getContents()` method was _very_ useful. But now
-the method `Filesystem::readfile()` is available.
+Prior to Symfony 7.1, the `::getContents()` method was _very_ useful. But now
+the method `Filesystem::readfile()` is available. Note that this method was
+backported in this library.
 
 However, a lot of applications may be using the Symfony Finder `SplFileInfo`
 because of it still. Whilst for the source code it makes little difference, for
