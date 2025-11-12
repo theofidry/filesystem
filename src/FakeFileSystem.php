@@ -42,22 +42,12 @@ use Traversable;
 
 final class FakeFileSystem implements FileSystem
 {
-    public function isRelativePath(string $path): bool
-    {
-        throw new DomainException('Unexpected call.');
-    }
-
     public function escapePath(string $path): string
     {
         throw new DomainException('Unexpected call.');
     }
 
     public function dumpFile(string $filename, $content = ''): void
-    {
-        throw new DomainException('Unexpected call.');
-    }
-
-    public function getFileContents(string $file): string
     {
         throw new DomainException('Unexpected call.');
     }
@@ -157,6 +147,16 @@ final class FakeFileSystem implements FileSystem
     }
 
     public function makePathRelative(string $endPath, string $startPath): string
+    {
+        throw new DomainException('Unexpected call.');
+    }
+
+    public function realPath(string $file): string
+    {
+        throw new DomainException('Unexpected call.');
+    }
+
+    public function normalizedRealPath(string $file): string
     {
         throw new DomainException('Unexpected call.');
     }

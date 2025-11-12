@@ -52,29 +52,49 @@ use Symfony\Component\Finder\Finder;
 interface FileSystem extends SymfonyFileSystem
 {
     /**
-     * Returns whether a path is relative.
+     * Returns whether the file path is an absolute path.
      *
-     * @param string $path a path string
-     *
-     * @return bool returns true if the path is relative or empty, false if
-     *              it is absolute
+     * @deprecated Use Path::isAbsolutePath() instead
      */
-    public function isRelativePath(string $path): bool;
-
-    public function escapePath(string $path): string;
-
-    public function dumpFile(string $filename, $content = ''): void;
+    public function isAbsolutePath(string $file): bool;
 
     /**
-     * Gets the contents of a file.
+     * Returns the absolute path, but the path will not be normalized.
      *
-     * @param string $file File path
+     * For example, `::realpath('C:\Users\Name\file.txt')` on Windows will
+     * return "C:\Users\Name\file.txt" (backslashes).
      *
-     * @throws IOException If the file cannot be read
+     * @see https://php.net/manual/en/function.realpath.php
      *
-     * @return string File contents
+     * @throws IOException When the file or symlink target does not exist.
      */
-    public function getFileContents(string $file): string;
+    public function realPath(string $file): string;
+
+    /**
+     * Returns the absolute normalized path.
+     *
+     * For example, `::realpath('C:\Users\Name\file.txt')` on Windows will
+     * return "C:/Users/Name/file.txt".
+     *
+     * @see https://php.net/manual/en/function.realpath.php
+     *
+     * @throws IOException When the file or symlink target does not exist.
+     */
+    public function normalizedRealPath(string $file): string;
+
+    /**
+     * Given an existing path, convert it to a path relative to a given starting path.
+     *
+     * @deprecated Use Path::makeRelative() instead
+     */
+    public function makePathRelative(string $endPath, string $startPath): string;
+
+    /**
+     * Replaces the path directory separator by the system directory separator.
+     *
+     * TODO: this should ideally be part of Path instead.
+     */
+    public function escapePath(string $path): string;
 
     /**
      * Creates a temporary directory.
