@@ -53,7 +53,7 @@ interface FileSystem extends SymfonyFileSystem
 {
     /**
      * @deprecated Deprecated since 2.0. Use `Path::isRelative()` instead. Will be removed in 3.0.
-     * @see Path::isRelative
+     * @see Path::isRelative())
      */
     public function isRelativePath(string $path): bool;
 
@@ -61,7 +61,7 @@ interface FileSystem extends SymfonyFileSystem
 
     /**
      * @deprecated Use the `::readFile()` method. Deprecated since 2.0 and it will be removed in 3.0.
-     * @see readFile
+     * @see SymfonyFileSystem::readFile()
      *
      * @throws IOException If the file cannot be read
      */
