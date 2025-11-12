@@ -34,9 +34,9 @@ jobs:
                     - "lowest"
                 include:
                     - operating-system: "windows-latest"
-                      php-version: "8.4"
-                      dependencies: "highest"
-                      symfony-version: "unchanged"
+                      php: "8.4"
+                      dependency-versions: "highest"
+                      symfony: "unchanged"
 
         steps:
             -   name: "Check out repository code"
