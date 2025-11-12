@@ -4,7 +4,7 @@ This is a tiny wrapper around the [Symfony filesystem]. It provides a `FileSyste
 a few more utilities.
 
 
-[TOC]
+[[TOC]]
 
 
 ## FileSystemTestCase
@@ -148,7 +148,7 @@ for your filesystem layer or for usage within tests.
 ```php
 FS::touch('file');
 
-// insteadof
+// instead of
 (new NativeFileSystem)->touch('file');
 ```
 
