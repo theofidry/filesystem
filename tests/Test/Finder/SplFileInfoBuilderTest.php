@@ -48,6 +48,55 @@ use Symfony\Component\Finder\SplFileInfo;
 #[CoversClass(SplFileInfoBuilder::class)]
 final class SplFileInfoBuilderTest extends TestCase
 {
+    public function test_it_can_create_an_instance_with_test_data(): void
+    {
+        $fileInfo = SplFileInfoBuilder::withTestData()->build();
+
+        self::assertSame(
+            [
+                'path' => '/path/to/project/src',
+                'pathname' => '/path/to/project/src/App.php',
+                'relativePath' => 'src',
+                'relativePathname' => 'src/App.php',
+                'filename' => 'App.php',
+                'filenameWithoutExtensions' => 'App',
+                'contents' => <<<'PHP'
+                    <?php
+
+                    echo 'Hello world!';
+
+                    PHP,
+            ],
+            self::getTestedSplFileInfoState($fileInfo),
+        );
+    }
+
+    public function test_it_can_change_its_values(): void
+    {
+        $fileInfo = SplFileInfoBuilder::withTestData()
+            // If not an absolute path, it counts as the relative path to this statement
+            // (this is SplFileInfo behaviour).
+            // If you do not which for that, use absolute paths.
+            ->withFile('SplFileInfoTest.php')
+            ->withContents('Hello world!')
+            ->withRelativePath('tests/Test/Finder')
+            ->withRelativePathname('tests/Test/Finder/SplFileInfoBuilderTest.php')
+            ->build();
+
+        self::assertSame(
+            [
+                'path' => '',
+                'pathname' => 'SplFileInfoTest.php',
+                'relativePath' => 'tests/Test/Finder',
+                'relativePathname' => 'tests/Test/Finder/SplFileInfoBuilderTest.php',
+                'filename' => 'SplFileInfoTest.php',
+                'filenameWithoutExtensions' => 'SplFileInfoTest',
+                'contents' => 'Hello world!',
+            ],
+            self::getTestedSplFileInfoState($fileInfo),
+        );
+    }
+
     #[DataProvider('fileInfoProvider')]
     public function test_it_can_create_a_builder_from_an_existing_instance(SplFileInfo $fileInfo): void
     {
@@ -60,6 +109,19 @@ final class SplFileInfoBuilderTest extends TestCase
     {
         yield [
             SplFileInfoBuilder::withTestData()->build(),
+        ];
+    }
+
+    private static function getTestedSplFileInfoState(SplFileInfo $fileInfo): array
+    {
+        return [
+            'path' => $fileInfo->getPath(),
+            'pathname' => $fileInfo->getPathname(),
+            'relativePath' => $fileInfo->getRelativePath(),
+            'relativePathname' => $fileInfo->getRelativePathname(),
+            'filename' => $fileInfo->getFilename(),
+            'filenameWithoutExtensions' => $fileInfo->getFilenameWithoutExtension(),
+            'contents' => $fileInfo->getContents(),
         ];
     }
 }
