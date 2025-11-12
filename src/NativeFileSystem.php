@@ -50,6 +50,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem as NativeSymfonyFilesystem;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
+use Webmozart\Assert\Assert;
 use function function_exists;
 use function is_dir;
 use function is_file;
@@ -68,6 +69,11 @@ class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
 {
     private static ?string $lastError = null;
 
+    public function isRelativePath(string $path): bool
+    {
+        return !$this->isAbsolutePath($path);
+    }
+
     public function escapePath(string $path): string
     {
         return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
@@ -76,6 +82,27 @@ class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
     public function dumpFile(string $filename, $content = ''): void
     {
         parent::dumpFile($filename, $content);
+    }
+
+    public function getFileContents(string $file): string
+    {
+        Assert::file($file);
+        Assert::readable($file);
+
+        if (false === ($contents = @file_get_contents($file))) {
+            throw new IOException(
+                sprintf(
+                    'Failed to read file "%s": %s.',
+                    $file,
+                    error_get_last()['message'],
+                ),
+                0,
+                null,
+                $file,
+            );
+        }
+
+        return $contents;
     }
 
     public function makeTmpDir(string $namespace, string $className): string
