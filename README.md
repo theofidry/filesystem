@@ -1,30 +1,10 @@
 # Filesystem
 
-This is a tiny wrapper around the [Symfony filesystem]. It provides:
-
-- An interface `FileSystem` that contains all the methods from the Symfony public API and a few additions.
-- A class `NativeFileSystem` implementing `FileSystem`.
-- A readonly implementation `ReadOnlyFileSystem`. It can be used to either do no write operation or to bailout on write
-  operations. Note that for a better read/write API, a library such as [Flysystem] is recommended.
-- A `FakeFileSystem` implementation.
-- A `FS` static class for when you are not interested of using dependency injection for your filesystem layer or for
-  usage within tests.
-- A `SplFileInfoFactory` utility to create a Symfony Finder `SplFileInfo` instance without using `Finder`.
-- A PHPUnit `FileSystemTestCase` which lets you easily write a file-system dependent test.
-- An immutable builder `SplFileInfoBuilder` to easily create a dummy Symfony Finder `SplFileInfo` instance.
-
-## Why the utilities for the Symfony Finder `SplFileInfo`?
-
-`Symfony\Component\Finder\SplFileInfo` distinguish itself from `SplFileInfo` in two ways:
-
-- Files found by a finder are relative to the root directory. Hence, the relative path and pathname.
-- The `::getContents()` method.
-
-Sometimes you are not interested in the relative path API part at all, but using `SplFileInfo` would be
-too annoying due to the missing `::getContents()` method.
+This is a tiny wrapper around the [Symfony filesystem]. It provides a `FileSystem` interface and
+a few more utilities.
 
 
-## Usage
+## FileSystemTestCase
 
 An example of PHPUnit test:
 
@@ -43,6 +23,7 @@ use function is_string;
 
 final class MyAppFileSystemTest extends FileSystemTestCase
 {
+    // This method needs to be implemented by your test or base filesystem test class.
     public static function getTmpDirNamespace(): string
     {
         // This is to make it thread safe with Infection. If you are not using
@@ -59,9 +40,9 @@ final class MyAppFileSystemTest extends FileSystemTestCase
 
     public function test_it_works(): void
     {
-        // This file is dumped into a temporary directory. Here
+        // This file is dumped into a temporary directory. Here,
         // something like '/private/var/folders/p3/lkw0cgjj2fq0656q_9rd0mk80000gn/T/MyApp/MyAppFileSystemTest10000'
-        // on OSX. 
+        // on OSX.
         FS::dumpFile('file1', '');
         
         $files = Finder::create()
@@ -73,6 +54,101 @@ final class MyAppFileSystemTest extends FileSystemTestCase
 }
 
 ```
+
+## SplFileInfo utilities
+
+The Symfony Finder `SplFileInfo` distinguish itself from `\SplFileInfo` in two ways:
+
+- Files found by a finder are relative to the root directory. Hence, the relative path and pathname.
+- The `::getContents()` method.
+
+Prior to Symfony 6.2, the `::getContents()` method was _very_ useful. But now
+the method `Filesystem::readfile()` is available.
+
+However, a lot of applications may be using the Symfony Finder `SplFileInfo`
+because of it still. Whilst for the source code it makes little difference, for
+tests it is more annoying as it is more complicated to create a fake Symfony
+Finder `SplFileInfo` object. You will have to create a mock, which may be more
+or less verbose depending on how much of the `SplFileInfo` API is used.
+
+To help to fill in the gap, this library provides two utilities.
+
+
+### SplFileInfoFactory
+
+`SplFileInfoFactory` allows to easily create a real Symfony Finder `SplFileInfo`
+instance without using a `Finder`:
+
+```php
+use PHPUnit\Framework\TestCase;
+
+class DemoTest extends TestCase {
+
+    function test_it_allows_to_compare_finder_splfileinfo_files(): void
+    {
+        $actual = $myService->getFileInfo();
+        
+        $expected = SplFileInfoFactory::fromPath('/path/to/expected', __DIR__);
+
+        self::assertEquals($expected, $actual);
+    }
+}
+```
+
+
+### SplFileInfoBuilder
+
+`SplFileInfoBuilder` allows to easily create a fake `SplFileInfo` instance. It
+is often simpler than using a mock:
+
+```diff
+- private function createSplFileInfoMock(string $file): SplFileInfo&MockObject
++ private function createSplFileInfo(string $file): SplFileInfo
+{
+-    $splFileInfoMock = $this->createMock(SplFileInfo::class);
+-    $splFileInfoMock->method('__toString')->willReturn($file);
+-    $splFileInfoMock->method('getFilename')->willReturn($file);
+-    $splFileInfoMock->method('getRealPath')->willReturn($file);
+-    $splFileInfoMock->method('getContents')->willReturn(
+-        file_exists($file) ? file_get_contents($file) : 'content',
+-    );
+-
+-    return $splFileInfoMock;
++    return SplFileInfoBuilder::withTestData()
++        ->withFile($file)
++        ->withContents(
++            file_exists($file) ? file_get_contents($file) : 'content',
++        )
++        ->build();
+}
+```
+
+
+## ReadOnlyFileSystem
+
+```php
+// Write operations will throw a `DomainException` exception.
+new ReadOnlyFileSystem(failOnWrite: true);
+
+// Write operations will do nothing. Methods that return a path, e.g.
+// `::tempnam()` will return an empty string.
+new ReadOnlyFileSystem(failOnWrite: false);
+```
+
+
+## FS
+
+A `FS` static class for when you are not interested of using dependency injection
+for your filesystem layer or for usage within tests.
+
+
+```php
+FS::touch('file');
+
+// instead of
+(new NativeFileSystem)->touch('file');
+```
+
 
 ## Contributing
 
