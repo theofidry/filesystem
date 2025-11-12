@@ -15,11 +15,12 @@ concurrency:
 
 jobs:
     tests:
-        runs-on: "ubuntu-latest"
-        name: "Tests with PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }}"
+        runs-on: "${{ matrix.operating-system }}"
+        name: "Tests with PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }} on ${{ matrix.runs-on }}"
         strategy:
             fail-fast: true
             matrix:
+                operating-system: [ "ubuntu-latest" ]
                 php:
                     - "8.2"
                     - "8.3"
