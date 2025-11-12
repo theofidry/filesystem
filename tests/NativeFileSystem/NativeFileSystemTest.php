@@ -42,6 +42,9 @@ use Fidry\FileSystem\Test\FileSystemTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Filesystem\Path;
+use function realpath;
+use function str_replace;
 use const PHP_OS_FAMILY;
 
 /**
@@ -170,11 +173,8 @@ final class NativeFileSystemTest extends FileSystemTestCase
     #[DataProvider('normalizedRealPathProvider')]
     public function test_it_can_get_the_normalized_realpath_of_a_file(
         string $path,
-        string|IOException $expectedWindows,
-        string|IOException $expectedUnixLinux,
+        string|IOException $expected,
     ): void {
-        $expected = self::isWindows() ? $expectedWindows : $expectedUnixLinux;
-
         if ($expected instanceof IOException) {
             $this->expectException(IOException::class);
             $this->expectExceptionMessage($expected->getMessage());
@@ -195,51 +195,40 @@ final class NativeFileSystemTest extends FileSystemTestCase
         $validSymlink = __DIR__.'/valid_symlink.txt';
         $brokenSymlink = __DIR__.'/broken_symlink.txt';
         $nonExistentFile = __DIR__.'/this_file_does_not_exist.txt';
+        $resolvedSymlink = realpath($validSymlink);
 
-        // Path::canonicalize always returns forward slashes regardless of OS
         yield 'test file path' => [
             $testFile,
-            $testFile,  // Windows: canonicalized to forward slashes
-            $testFile,  // Unix/Linux: already has forward slashes
+            Path::canonicalize($testFile),
         ];
 
         yield 'test directory path' => [
             $testDir,
-            $testDir,  // Windows: canonicalized to forward slashes
-            $testDir,  // Unix/Linux: already has forward slashes
+            $testDir,
         ];
 
         yield 'relative path to current directory' => [
             __DIR__.'/.',
-            $testDir,  // Windows: resolved and canonicalized
-            $testDir,  // Unix/Linux: resolved
+            $testDir,
         ];
 
         yield 'relative path to parent directory' => [
             __DIR__.'/..',
-            $parentDir,  // Windows: resolved and canonicalized
-            $parentDir,  // Unix/Linux: resolved
+            $parentDir,
         ];
 
-        // Symlink resolves to its target with forward slashes
-        $resolvedSymlink = realpath($validSymlink);
         yield 'valid symlink' => [
             $validSymlink,
-            $resolvedSymlink,  // Windows: canonicalized to forward slashes
-            $resolvedSymlink,  // Unix/Linux: already has forward slashes
+            $resolvedSymlink,
         ];
 
-        // Broken symlink throws exception
         yield 'broken symlink' => [
             $brokenSymlink,
             new IOException(sprintf('The file or directory "%s" does not exist.', $brokenSymlink)),
-            new IOException(sprintf('The file or directory "%s" does not exist.', $brokenSymlink)),
         ];
 
-        // Non-existent file throws exception
         yield 'non-existent file' => [
             $nonExistentFile,
-            new IOException(sprintf('The file or directory "%s" does not exist.', $nonExistentFile)),
             new IOException(sprintf('The file or directory "%s" does not exist.', $nonExistentFile)),
         ];
     }
