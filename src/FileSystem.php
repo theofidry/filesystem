@@ -52,11 +52,12 @@ use Symfony\Component\Finder\Finder;
 interface FileSystem extends SymfonyFileSystem
 {
     /**
-     * Returns whether the file path is an absolute path.
-     *
-     * @deprecated Use Path::isAbsolutePath() instead
+     * @deprecated Deprecated since 2.0. Use `Path::isRelative()` instead. Will be removed in 3.0.
+     * @see Path::isRelative())
      */
-    public function isAbsolutePath(string $file): bool;
+    public function isRelativePath(string $path): bool;
+
+    public function escapePath(string $path): string;
 
     /**
      * Returns the absolute path, but the path will not be normalized.
@@ -83,18 +84,12 @@ interface FileSystem extends SymfonyFileSystem
     public function normalizedRealPath(string $file): string;
 
     /**
-     * Given an existing path, convert it to a path relative to a given starting path.
+     * @deprecated Use the `::readFile()` method. Deprecated since 2.0 and it will be removed in 3.0.
+     * @see SymfonyFileSystem::readFile()
      *
-     * @deprecated Use Path::makeRelative() instead
+     * @throws IOException If the file cannot be read
      */
-    public function makePathRelative(string $endPath, string $startPath): string;
-
-    /**
-     * Replaces the path directory separator by the system directory separator.
-     *
-     * TODO: this should ideally be part of Path instead.
-     */
-    public function escapePath(string $path): string;
+    public function getFileContents(string $file): string;
 
     /**
      * Creates a temporary directory.

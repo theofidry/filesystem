@@ -70,7 +70,7 @@ class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
 
     public function escapePath(string $path): string
     {
-        return str_replace('/', DIRECTORY_SEPARATOR, $path);
+        return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
     }
 
     public function dumpFile(string $filename, $content = ''): void
