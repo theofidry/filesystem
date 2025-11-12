@@ -97,6 +97,50 @@ final class SplFileInfoBuilderTest extends TestCase
         );
     }
 
+    public function test_it_is_immutable(): void
+    {
+        $builder = SplFileInfoBuilder::withTestData()
+            ->withFile('SplFileInfoTest.php')
+            ->withContents('Hello world!')
+            ->withRelativePath('tests/Test/Finder')
+            ->withRelativePathname('tests/Test/Finder/SplFileInfoBuilderTest.php');
+
+        $fileInfo2 = $builder
+            ->withFile('AnotherSplFileInfoTest.php')
+            ->withContents('Something!')
+            ->withRelativePath('tests/Test/AnotherFinder')
+            ->withRelativePathname('tests/Test/AnotherFinder/AnotherSplFileInfoBuilderTest.php')
+            ->build();
+
+        // Build this file _after_ we updated the builder
+        $fileInfo1 = $builder->build();
+
+        self::assertSame(
+            [
+                'path' => '',
+                'pathname' => 'SplFileInfoTest.php',
+                'relativePath' => 'tests/Test/Finder',
+                'relativePathname' => 'tests/Test/Finder/SplFileInfoBuilderTest.php',
+                'filename' => 'SplFileInfoTest.php',
+                'filenameWithoutExtensions' => 'SplFileInfoTest',
+                'contents' => 'Hello world!',
+            ],
+            self::getTestedSplFileInfoState($fileInfo1),
+        );
+        self::assertSame(
+            [
+                'path' => '',
+                'pathname' => 'AnotherSplFileInfoTest.php',
+                'relativePath' => 'tests/Test/AnotherFinder',
+                'relativePathname' => 'tests/Test/AnotherFinder/AnotherSplFileInfoBuilderTest.php',
+                'filename' => 'AnotherSplFileInfoTest.php',
+                'filenameWithoutExtensions' => 'AnotherSplFileInfoTest',
+                'contents' => 'Something!',
+            ],
+            self::getTestedSplFileInfoState($fileInfo2),
+        );
+    }
+
     #[DataProvider('fileInfoProvider')]
     public function test_it_can_create_a_builder_from_an_existing_instance(SplFileInfo $fileInfo): void
     {
