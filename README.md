@@ -4,9 +4,6 @@ This is a tiny wrapper around the [Symfony filesystem]. It provides a `FileSyste
 a few more utilities.
 
 
-[[TOC]]
-
-
 ## FileSystemTestCase
 
 An example of PHPUnit test:
