@@ -224,6 +224,8 @@ interface SymfonyFileSystem
 
     /**
      * Returns whether the file path is an absolute path.
+     *
+     * @deprecated Deprecated since 2.0. Use `Path::isAbsolute()` instead.
      */
     public function isAbsolutePath(string $file): bool;
 

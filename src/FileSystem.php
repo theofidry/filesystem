@@ -52,18 +52,12 @@ use Symfony\Component\Finder\Finder;
 interface FileSystem extends SymfonyFileSystem
 {
     /**
-     * Returns whether a path is relative.
-     *
-     * @param string $path a path string
-     *
-     * @return bool returns true if the path is relative or empty, false if
-     *              it is absolute
+     * @deprecated Deprecated since 2.0. Use `Path::isRelativePath()` instead. Will be removed in 3.0.
+     * @see Path::isRelativePath
      */
     public function isRelativePath(string $path): bool;
 
     public function escapePath(string $path): string;
-
-    public function dumpFile(string $filename, $content = ''): void;
 
     /**
      * @deprecated Use the `::readFile()` method. Deprecated since 2.0 and it will be removed in 3.0.

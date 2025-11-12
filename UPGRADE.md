@@ -2,4 +2,5 @@
 
 - The class `FileSystem` was renamed `NativeFileSystem`. `FileSystem` is now an
   interface.
-- Deprecated the `::getFileContents()` method in favour of the `::readFile()`.
+- Deprecated the `::getFileContents()` method in favour of `::readFile()`.
+- Deprecated the `::isRelativePath()` method in favour of `Path::isRelativePath()`.
