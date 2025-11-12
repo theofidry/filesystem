@@ -18,6 +18,15 @@
             "Fidry\\FileSystem\\Test\\FileSystemTestCase::tearDown"
         ],
 
+        "CloneRemoval": {
+            "ignore": [
+                // Testing that each methods does a clone is a bit verbose...
+                "Fidry\\FileSystem\\Test\\Finder\\SplFileInfoBuilder::withFile",
+                "Fidry\\FileSystem\\Test\\Finder\\SplFileInfoBuilder::withRelativePath",
+                "Fidry\\FileSystem\\Test\\Finder\\SplFileInfoBuilder::withRelativePathname",
+                "Fidry\\FileSystem\\Test\\Finder\\SplFileInfoBuilder::withContents",
+            ]
+        },
         "FalseValue": {
             "ignore": [
                 "Fidry\\FileSystem\\Test\\FileSystemTestCase::safeGetCurrentWorkingDirectory"
