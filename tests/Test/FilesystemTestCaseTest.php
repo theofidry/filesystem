@@ -79,7 +79,7 @@ final class FilesystemTestCaseTest extends FileSystemTestCase
             ->in($this->tmp);
 
         $expected = [
-            'dir1/file3',
+            FS::escapePath('dir1/file3'),
             'file1',
             'file2',
         ];
