@@ -189,4 +189,14 @@ final class FakeFileSystem implements FileSystem
     {
         throw new DomainException('Unexpected call.');
     }
+
+    public function realPath(string $file): string
+    {
+        throw new DomainException('Unexpected call.');
+    }
+
+    public function normalizedRealPath(string $file): string
+    {
+        throw new DomainException('Unexpected call.');
+    }
 }

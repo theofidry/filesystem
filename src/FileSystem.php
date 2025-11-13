@@ -60,6 +60,30 @@ interface FileSystem extends SymfonyFileSystem
     public function escapePath(string $path): string;
 
     /**
+     * Returns the absolute path, but the path will not be normalized.
+     *
+     * For example, `::realpath('C:\Users\Name\file.txt')` on Windows will
+     * return "C:\Users\Name\file.txt" (backslashes).
+     *
+     * @see https://php.net/manual/en/function.realpath.php
+     *
+     * @throws IOException When the file or symlink target does not exist.
+     */
+    public function realPath(string $file): string;
+
+    /**
+     * Returns the absolute normalized path.
+     *
+     * For example, `::realpath('C:\Users\Name\file.txt')` on Windows will
+     * return "C:/Users/Name/file.txt".
+     *
+     * @see https://php.net/manual/en/function.realpath.php
+     *
+     * @throws IOException When the file or symlink target does not exist.
+     */
+    public function normalizedRealPath(string $file): string;
+
+    /**
      * @deprecated Use the `::readFile()` method. Deprecated since 2.0 and it will be removed in 3.0.
      * @see SymfonyFileSystem::readFile()
      *

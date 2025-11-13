@@ -382,4 +382,14 @@ class FS
     {
         return self::getInstance()->isReadable(...func_get_args());
     }
+
+    public function realPath(string $file): string
+    {
+        return self::getInstance()->realPath(...func_get_args());
+    }
+
+    public function normalizedRealPath(string $file): string
+    {
+        return self::getInstance()->normalizedRealPath(...func_get_args());
+    }
 }
