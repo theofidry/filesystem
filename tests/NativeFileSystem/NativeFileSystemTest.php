@@ -45,6 +45,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Path;
 use function realpath;
 use function str_replace;
+use const DIRECTORY_SEPARATOR;
 use const PHP_OS_FAMILY;
 
 /**
@@ -204,32 +205,42 @@ final class NativeFileSystemTest extends FileSystemTestCase
 
         yield 'test directory path' => [
             $testDir,
-            $testDir,
+            str_replace(DIRECTORY_SEPARATOR, '/', $testDir),
         ];
 
         yield 'relative path to current directory' => [
             __DIR__.'/.',
-            $testDir,
+            str_replace(DIRECTORY_SEPARATOR, '/', $testDir),
         ];
 
         yield 'relative path to parent directory' => [
             __DIR__.'/..',
-            $parentDir,
+            str_replace(DIRECTORY_SEPARATOR, '/', $parentDir),
         ];
 
         yield 'valid symlink' => [
             $validSymlink,
-            $resolvedSymlink,
+            str_replace(DIRECTORY_SEPARATOR, '/', $resolvedSymlink),
         ];
 
         yield 'broken symlink' => [
             $brokenSymlink,
-            new IOException(sprintf('The file or directory "%s" does not exist.', $brokenSymlink)),
+            new IOException(
+                sprintf(
+                    'The file or directory "%s" does not exist.',
+                    $brokenSymlink,
+                ),
+            ),
         ];
 
         yield 'non-existent file' => [
             $nonExistentFile,
-            new IOException(sprintf('The file or directory "%s" does not exist.', $nonExistentFile)),
+            new IOException(
+                sprintf(
+                    'The file or directory "%s" does not exist.',
+                    $nonExistentFile,
+                ),
+            ),
         ];
     }
 
