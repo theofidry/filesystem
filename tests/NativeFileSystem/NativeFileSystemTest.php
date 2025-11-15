@@ -260,7 +260,7 @@ final class NativeFileSystemTest extends FileSystemTestCase
         try {
             $temporaryFile = $this->fileSystem->tempnam($targetDirectory, 'Prefix', 'Suffix');
 
-            $expected = [...$before, $temporaryFile];
+            $expected = [...$before, Path::normalize($temporaryFile)];
             $actual = self::snapshotDirContent($targetDirectory);
 
             self::assertFileIsReadable($temporaryFile);
@@ -289,7 +289,7 @@ final class NativeFileSystemTest extends FileSystemTestCase
         try {
             $temporaryFile = $this->fileSystem->tmpFile('Prefix', 'Suffix', $targetDirectory);
 
-            $expected = [...$before, $temporaryFile];
+            $expected = [...$before, Path::normalize($temporaryFile)];
             $actual = self::snapshotDirContent($targetDirectory);
 
             self::assertFileIsReadable($temporaryFile);
@@ -318,7 +318,7 @@ final class NativeFileSystemTest extends FileSystemTestCase
         try {
             $temporaryFile = $this->fileSystem->tmpFile('Prefix', 'Suffix');
 
-            $expected = [...$before, $temporaryFile];
+            $expected = [...$before, Path::normalize($temporaryFile)];
             $actual = self::snapshotDirContent($targetDirectory);
 
             self::assertFileIsReadable($temporaryFile);
