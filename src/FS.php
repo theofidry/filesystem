@@ -370,14 +370,25 @@ class FS
      * but targets the system default temporary directory by default and has a more consistent
      * name with tmpDir.
      *
+     * For example:
+     *
+     *  ```php
+     *  tmpFile('build')
+     *
+     *  // on OSX
+     *  => '/var/folders/p3/lkw0cgjj2fq0656q_9rd0mk80000gn/T/build8d9e0f1a'
+     *  // on Windows
+     *  => C:\Windows\Temp\build8d9e0f1a.tmp
+     *  ```
+     *
      * @param string $prefix          The prefix of the generated temporary file name.
      * @param string $suffix          The suffix of the generated temporary file name.
      * @param string $targetDirectory The directory where to create the temporary directory.
      *                                Defaults to the system default temporary directory.
      *
-     * @throws IOException
+     * @return string The new temporary file pathname.
      *
-     * @return string The new temporary directory pathname.
+     * @throws IOException
      *
      * @see tempnam()
      * @see SymfonyFileSystem::tempnam()
@@ -391,6 +402,17 @@ class FS
     /**
      * Creates a temporary directory with support for custom stream wrappers. Similar to tempnam()
      * but creates a directory instead of a file.
+     *
+     * For example:
+     *
+     * ```php
+     * tmpDir('build')
+     *
+     * // on OSX
+     * => '/var/folders/p3/lkw0cgjj2fq0656q_9rd0mk80000gn/T/build8d9e0f1a'
+     * // on Windows
+     * => C:\Windows\Temp\build8d9e0f1a.tmp
+     * ```
      *
      * @param string|null $prefix          The prefix of the generated temporary directory name.
      * @param string      $targetDirectory The directory where to create the temporary directory.

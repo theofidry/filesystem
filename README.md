@@ -4,9 +4,120 @@ This is a tiny wrapper around the [Symfony filesystem]. It provides a `FileSyste
 a few more utilities.
 
 
+## New methods
+
+```php
+interface FileSystem extends SymfonyFileSystem
+{
+    /**
+     * Replaces the path directory separator with the system one.
+     *
+     * For example, on Windows:
+     * 'C:/path/to/file' => 'C:\path\to\file',
+     */
+    public function escapePath(string $path): string;
+
+    /**
+     * Returns the absolute path, but the path will not be normalized.
+     *
+     * For example, `::realpath('C:\Users\Name\file.txt')` on Windows will
+     * return "C:\Users\Name\file.txt" (backslashes).
+     *
+     * @see https://php.net/manual/en/function.realpath.php
+     *
+     * @throws IOException When the file or symlink target does not exist.
+     */
+    public function realPath(string $file): string;
+
+    /**
+     * Returns the absolute normalized path.
+     *
+     * For example, `::realpath('C:\Users\Name\file.txt')` on Windows will
+     * return "C:/Users/Name/file.txt".
+     *
+     * @see https://php.net/manual/en/function.realpath.php
+     *
+     * @throws IOException When the file or symlink target does not exist.
+     */
+    public function normalizedRealPath(string $file): string;
+
+    /**
+     * Creates a temporary file with support for custom stream wrappers. Same as tempnam(),
+     * but targets the system default temporary directory by default and has a more consistent
+     * name with tmpDir.
+     *
+     * For example:
+     *
+     *  ```php
+     *  tmpFile('build')
+     *
+     *  // on OSX
+     *  => '/var/folders/p3/lkw0cgjj2fq0656q_9rd0mk80000gn/T/build8d9e0f1a'
+     *  // on Windows
+     *  => C:\Windows\Temp\build8d9e0f1a.tmp
+     *  ```
+     *
+     * @param string $prefix          The prefix of the generated temporary file name.
+     * @param string $suffix          The suffix of the generated temporary file name.
+     * @param string $targetDirectory The directory where to create the temporary directory.
+     *                                Defaults to the system default temporary directory.
+     *
+     * @return string The new temporary file pathname.
+     *
+     * @throws IOException
+     *
+     * @see tempnam()
+     * @see SymfonyFileSystem::tempnam()
+     * @see self::tmpDir()
+     */
+    public function tmpFile(string $prefix, string $suffix = '', ?string $targetDirectory = null): string;
+
+    /**
+     * Creates a temporary directory with support for custom stream wrappers. Similar to tempnam()
+     * but creates a directory instead of a file.
+     *
+     * For example:
+     *
+     * ```php
+     * tmpDir('build')
+     *
+     * // on OSX
+     * => '/var/folders/p3/lkw0cgjj2fq0656q_9rd0mk80000gn/T/build8d9e0f1a'
+     * // on Windows
+     * => C:\Windows\Temp\build8d9e0f1a.tmp
+     * ```
+     *
+     * @param string|null $prefix          The prefix of the generated temporary directory name.
+     * @param string      $targetDirectory The directory where to create the temporary directory.
+     *                                     Defaults to the system default temporary directory.
+     *
+     * @throws IOException
+     *
+     * @return string The new temporary directory pathname.
+     *
+     * @see tempnam()
+     */
+    public function tmpDir(string $prefix, ?string $targetDirectory = null): string;
+
+    /**
+     * Tells whether a file exists and is readable.
+     *
+     * @throws IOException When Window's path is longer than 258 characters
+     */
+    public function isReadable(string $filename): bool;
+
+    public function isReadableFile(string $filename): bool;
+
+    public function isReadableDirectory(string $filename): bool;
+
+    public function createFinder(): Finder;
+}
+```
+
+
 ## FileSystemTestCase
 
-An example of PHPUnit test:
+An example of a PHPUnit test:
 
 ```php
 
