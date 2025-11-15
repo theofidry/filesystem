@@ -393,7 +393,7 @@ class FS
      * @see SymfonyFileSystem::tempnam()
      * @see self::tmpDir()
      */
-    public function tmpFile(string $prefix, string $suffix = '', ?string $targetDirectory = null): string
+    public static function tmpFile(string $prefix, string $suffix = '', ?string $targetDirectory = null): string
     {
         return self::getInstance()->tmpFile(...func_get_args());
     }
@@ -423,7 +423,7 @@ class FS
      *
      * @see tempnam()
      */
-    public function tmpDir(string $prefix, ?string $targetDirectory = null): string
+    public static function tmpDir(string $prefix, ?string $targetDirectory = null): string
     {
         return self::getInstance()->tmpDir(...func_get_args());
     }
@@ -441,12 +441,12 @@ class FS
         return self::getInstance()->getNamespacedTmpDir(...func_get_args());
     }
 
-    public function isReadableFile(string $filename): bool
+    public static function isReadableFile(string $filename): bool
     {
         return self::getInstance()->isReadable(...func_get_args());
     }
 
-    public function isReadableDirectory(string $filename): bool
+    public static function isReadableDirectory(string $filename): bool
     {
         return self::getInstance()->isReadableDirectory(...func_get_args());
     }
@@ -456,17 +456,17 @@ class FS
      *
      * @throws IOException When Window's path is longer than 258 characters
      */
-    public function isReadable(string $filename): bool
+    public static function isReadable(string $filename): bool
     {
         return self::getInstance()->isReadable(...func_get_args());
     }
 
-    public function realPath(string $file): string
+    public static function realPath(string $file): string
     {
         return self::getInstance()->realPath(...func_get_args());
     }
 
-    public function normalizedRealPath(string $file): string
+    public static function normalizedRealPath(string $file): string
     {
         return self::getInstance()->normalizedRealPath(...func_get_args());
     }

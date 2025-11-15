@@ -43,6 +43,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionMethod;
 use function array_diff;
+use function array_filter;
 use function array_map;
 use function ksort;
 
@@ -64,7 +65,7 @@ final class FSImplementationTest extends TestCase
     public function test_fs_implements_the_filesystem_interface_statically(): void
     {
         $expected = self::getFileSystemMethodNames();
-        $actual = self::getFSMethodNames();
+        $actual = self::getFSStaticMethodNames();
 
         self::assertEqualsCanonicalizing($expected, $actual);
     }
@@ -92,14 +93,17 @@ final class FSImplementationTest extends TestCase
     /**
      * @return list<string>
      */
-    private static function getFSMethodNames(): array
+    private static function getFSStaticMethodNames(): array
     {
         $fileSystemReflection = new ReflectionClass(FS::class);
-        $fileSystemMethods = $fileSystemReflection->getMethods(ReflectionMethod::IS_PUBLIC);
+        $fileSystemStaticMethods = array_filter(
+            $fileSystemReflection->getMethods(ReflectionMethod::IS_PUBLIC),
+            static fn (ReflectionMethod $method): bool => $method->isStatic(),
+        );
 
         $methodNames = array_map(
             static fn (ReflectionMethod $method): string => $method->getName(),
-            $fileSystemMethods,
+            $fileSystemStaticMethods,
         );
 
         $synchronizedMethodNames = array_diff($methodNames, self::NON_SYNCHRONIZED_FS_METHOD_NAMES);
