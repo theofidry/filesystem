@@ -132,9 +132,8 @@ interface FileSystem extends SymfonyFileSystem
      * @param string $targetDirectory The directory where to create the temporary directory.
      *                                Defaults to the system default temporary directory.
      *
-     * @return string The new temporary file pathname.
-     *
      * @throws IOException
+     * @return string      The new temporary file pathname.
      *
      * @see tempnam()
      * @see SymfonyFileSystem::tempnam()

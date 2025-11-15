@@ -276,7 +276,7 @@ final class NativeFileSystemTest extends FileSystemTestCase
         );
 
         self::assertMatchesRegularExpression(
-            '/^Prefix[\p{L}\d]+Suffix$/',
+            '/^Prefix[\p{L}\d\.]+Suffix$/',
             $fileName,
         );
     }
