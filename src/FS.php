@@ -393,7 +393,7 @@ class FS
      * @see SymfonyFileSystem::tempnam()
      * @see self::tmpDir()
      */
-    public function tmpFile(string $prefix, string $suffix = '', ?string $targetDirectory = null): string
+    public static function tmpFile(string $prefix, string $suffix = '', ?string $targetDirectory = null): string
     {
         return self::getInstance()->tmpFile(...func_get_args());
     }
@@ -423,7 +423,7 @@ class FS
      *
      * @see tempnam()
      */
-    public function tmpDir(string $prefix, ?string $targetDirectory = null): string
+    public static function tmpDir(string $prefix, ?string $targetDirectory = null): string
     {
         return self::getInstance()->tmpDir(...func_get_args());
     }
