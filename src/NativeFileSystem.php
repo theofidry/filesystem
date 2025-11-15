@@ -141,10 +141,12 @@ class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
 
     public function tmpFile(string $prefix, string $suffix = '', ?string $targetDirectory = null): string
     {
-        return $this->tempnam(
-            $targetDirectory ?? sys_get_temp_dir(),
-            $prefix,
-            $suffix,
+        return $this->escapePath(
+            $this->tempnam(
+                $targetDirectory ?? sys_get_temp_dir(),
+                $prefix,
+                $suffix,
+            ),
         );
     }
 

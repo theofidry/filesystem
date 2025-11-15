@@ -270,7 +270,7 @@ final class NativeFileSystemTest extends FileSystemTestCase
         }
 
         $fileName = str_replace(
-            $targetDirectory.DIRECTORY_SEPARATOR,
+            $targetDirectory.'/',   // the incorrect directory separator on Windows is a bug in Symfony.
             '',
             $temporaryFile,
         );
