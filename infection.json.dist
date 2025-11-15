@@ -40,5 +40,11 @@
         "FunctionCallRemoval": false,
         "MethodCallRemoval": false,
         "PublicVisibility": false,
+        "ProtectedVisibility": false,
+        "UnwrapStrReplace": {
+            "ignore": [
+                "Fidry\\FileSystem\\Test\\FileSystemTestCase::getTmpDirPrefix"
+            ]
+        }
     }
 }

@@ -43,7 +43,6 @@ use Stringable;
 use function array_map;
 use function array_values;
 use function chdir;
-use function dirname;
 use function getcwd;
 use function is_array;
 use function iterator_to_array;
@@ -55,34 +54,18 @@ use const DIRECTORY_SEPARATOR;
 
 abstract class FileSystemTestCase extends TestCase
 {
-    protected static ?string $lastKnownTmpNamespace = null;
-
     protected string $cwd = '';
     protected string $tmp = '';
 
-    /**
-     * To make it thread safe you cna make the namespace different on a thread basis,
-     * e.g. based on an environment variable which indicates the thread "ID".
-     */
-    abstract public static function getTmpDirNamespace(): string;
-
-    public static function tearDownAfterClass(): void
-    {
-        // Cleans up whatever was there before. Indeed, upon failure PHPUnit may fail to trigger the
-        // `tearDown()` method and as a result some temporary files may still remain.
-        if (null !== static::$lastKnownTmpNamespace) {
-            FS::remove(static::$lastKnownTmpNamespace);
-        }
-    }
-
     protected function setUp(): void
     {
+        $tmpDirPrefix = $this->getTmpDirPrefix();
+
         $this->cwd = self::safeGetCurrentWorkingDirectory();
-        $this->tmp = FS::makeTmpDir(
-            static::getTmpDirNamespace(),
-            static::class,
-        );
-        static::$lastKnownTmpNamespace = dirname($this->tmp);
+        // We use the real path here as, for example, in OSX, the path returned
+        // is otherwise a link.
+        $this->tmp = FS::realPath(FS::tmpDir($tmpDirPrefix));
+
         self::safeChdir($this->tmp);
     }
 
@@ -94,6 +77,9 @@ abstract class FileSystemTestCase extends TestCase
             self::safeChdir($this->cwd);
             FS::remove($this->tmp);
         }
+
+        $this->cwd = '';
+        $this->tmp = '';
     }
 
     /**
@@ -118,7 +104,7 @@ abstract class FileSystemTestCase extends TestCase
         return array_values($normalizedPaths);
     }
 
-    private static function safeChdir(string $directory): void
+    final protected static function safeChdir(string $directory): void
     {
         $chdirResult = chdir($directory);
 
@@ -132,7 +118,7 @@ abstract class FileSystemTestCase extends TestCase
         }
     }
 
-    private static function safeGetCurrentWorkingDirectory(): string
+    final protected static function safeGetCurrentWorkingDirectory(): string
     {
         $result = getcwd();
 
@@ -141,5 +127,15 @@ abstract class FileSystemTestCase extends TestCase
         }
 
         return $result;
+    }
+
+    /**
+     * If the test case is `App\Tests\MyFilesystemServiceTestCase`, the default prefix will be "App\Tests\MyFilesystemServiceTestCase".
+     *
+     * @return string
+     */
+    protected function getTmpDirPrefix(): string
+    {
+        return str_replace('\\', '', static::class);
     }
 }

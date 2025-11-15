@@ -123,7 +123,7 @@ An example of a PHPUnit test:
 
 <?php declare(strict_types=1);
 
-namespace App;
+namespace App\Tests;
 
 use Fidry\FileSystem\FS;
 use Fidry\FileSystem\Test\FileSystemTestCase;
@@ -134,25 +134,12 @@ use function is_string;
 
 final class MyAppFileSystemTest extends FileSystemTestCase
 {
-    // This method needs to be implemented by your test or base filesystem test class.
-    public static function getTmpDirNamespace(): string
-    {
-        // This is to make it thread safe with Infection. If you are not using
-        // infection or do not need thread safety, this can return a constant
-        // string, e.g. your project/library name.
-        $threadId = getenv('TEST_TOKEN');
-
-        if (!is_string($threadId)) {
-            $threadId = '';
-        }
-
-        return 'MyApp'.$threadId;
-    }
-
     public function test_it_works(): void
     {
+        // The temporary directory can be changed by overriding `::getTmpDirPrefix()`.
+    
         // This file is dumped into a temporary directory. Here,
-        // something like '/private/var/folders/p3/lkw0cgjj2fq0656q_9rd0mk80000gn/T/MyApp/MyAppFileSystemTest10000'
+        // something like '/private/var/folders/p3/lkw0cgjj2fq0656q_9rd0mk80000gn/T/AppTestsMyAppFileSystemTest10000'
         // on OSX.
         FS::dumpFile('file1', '');
         
@@ -162,6 +149,17 @@ final class MyAppFileSystemTest extends FileSystemTestCase
 
         self::assertSame(['file1'], $this->normalizePaths($files));
     }
+    
+    // Utility methods available:
+    /**
+     * @param iterable<string|Stringable> $paths
+     *
+     * @return list<string> File real paths relative to the current temporary directory
+     */
+    function normalizePaths(iterable $paths): array;
+    
+    static function safeChdir(string $directory): void;
+    static function safeGetCurrentWorkingDirectory(): string;
 }
 
 ```

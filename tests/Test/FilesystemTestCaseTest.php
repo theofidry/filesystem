@@ -41,8 +41,7 @@ use Fidry\FileSystem\Test\FileSystemTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use Symfony\Component\Finder\Finder;
-use function getenv;
-use function is_string;
+use function getcwd;
 
 /**
  * @internal
@@ -51,22 +50,40 @@ use function is_string;
 #[Small]
 final class FilesystemTestCaseTest extends FileSystemTestCase
 {
-    public static function getTmpDirNamespace(): string
+    private string $cwdBeforeSetUp = '';
+
+    protected function setUp(): void
     {
-        $threadId = getenv('TEST_TOKEN');
+        $this->cwdBeforeSetUp = getcwd();
 
-        if (!is_string($threadId)) {
-            $threadId = '';
-        }
-
-        return 'FidryFilesystem'.$threadId;
+        parent::setUp();
     }
 
-    public function test_it_works(): void
+    protected function tearDown(): void
     {
-        self::assertNotNull($this->cwd);
-        self::assertNotNull($this->tmp);
-        self::assertNotNull(self::$lastKnownTmpNamespace);
+        $tmpBeforeCleanup = $this->tmp;
+
+        parent::tearDown();
+
+        $cwdAfterTearDown = getcwd();
+
+        // It is not very elegant to test in a teardown, but it's easier that
+        // way...
+
+        self::assertSame('', $this->cwd, 'Expected the current working directory to have been reset.');
+        self::assertSame('', $this->tmp, 'Expected the current temporary directory to have been reset.');
+        self::assertSame($this->cwdBeforeSetUp, $cwdAfterTearDown, 'Expected the current working directory to have been restored.');
+        self::assertDirectoryDoesNotExist($tmpBeforeCleanup, 'Expected the temporary directory to have been removed.');
+    }
+
+    public function test_it_creates_a_temporary_directory_to_which_we_switch_to(): void
+    {
+        $cwd = getcwd();
+
+        self::assertNotSame('', $this->cwd, 'Expected the current working directory to be set.');
+        self::assertNotSame('', $this->tmp, 'Expected the current temporary directory to be set.');
+        self::assertSame($this->cwdBeforeSetUp, $this->cwd, 'Expected the current working directory before setup to have been stored.');
+        self::assertSame($this->tmp, $cwd, 'Expected the current working directory to be the temporary directory.');
     }
 
     public function test_it_can_provide_the_relative_paths(): void
