@@ -178,6 +178,23 @@ class ReadOnlyFileSystem extends NativeFileSystem
         return '';
     }
 
+    public function tmpFile(
+        string $prefix,
+        string $suffix = '',
+        ?string $targetDirectory = null,
+    ): string {
+        $this->handleWrite(__METHOD__);
+
+        return '';
+    }
+
+    public function tmpDir(string $prefix, ?string $targetDirectory = null): string
+    {
+        $this->handleWrite(__METHOD__);
+
+        return '';
+    }
+
     private function handleWrite(string $methodName): void
     {
         if ($this->failOnWrite) {

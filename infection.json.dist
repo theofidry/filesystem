@@ -18,6 +18,8 @@
             // Too dangerous to mutate outside a container
             "Fidry\\FileSystem\\NativeFileSystem::makeTmpDir",
             "Fidry\\FileSystem\\NativeFileSystem::getNamespacedTmpDir",
+            "Fidry\\FileSystem\\NativeFileSystem::tmpDir",
+            "Fidry\\FileSystem\\NativeFileSystem::tmpFile",
             "Fidry\\FileSystem\\Test\\FileSystemTestCase::tearDown"
         ],
 

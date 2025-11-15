@@ -37,16 +37,24 @@ declare(strict_types=1);
 namespace Fidry\FileSystem\Tests\NativeFileSystem;
 
 use Fidry\FileSystem\FileSystem;
+use Fidry\FileSystem\FS;
 use Fidry\FileSystem\NativeFileSystem;
 use Fidry\FileSystem\Test\FileSystemTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Path;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
+use function array_map;
+use function iterator_to_array;
 use function realpath;
+use function sort;
 use function str_replace;
+use function sys_get_temp_dir;
 use const DIRECTORY_SEPARATOR;
 use const PHP_OS_FAMILY;
+use const SORT_STRING;
 
 /**
  * @internal
@@ -244,8 +252,168 @@ final class NativeFileSystemTest extends FileSystemTestCase
         ];
     }
 
+    public function test_it_can_create_a_temporary_file_in_a_target_directory(): void
+    {
+        $targetDirectory = sys_get_temp_dir();
+        $before = self::snapshotDirContent($targetDirectory);
+
+        try {
+            $temporaryFile = $this->fileSystem->tempnam($targetDirectory, 'Prefix', 'Suffix');
+
+            $expected = [...$before, FS::escapePath($temporaryFile)];
+            $actual = self::snapshotDirContent($targetDirectory);
+
+            self::assertFileIsReadable($temporaryFile);
+            self::assertEqualsCanonicalizing($expected, $actual);
+        } finally {
+            FS::remove($temporaryFile);
+        }
+
+        $fileName = str_replace(
+            $targetDirectory.'/',   // the incorrect directory separator on Windows is a bug in Symfony.
+            '',
+            $temporaryFile,
+        );
+
+        self::assertMatchesRegularExpression(
+            '/^Prefix[\p{L}\d\.]+Suffix$/',
+            $fileName,
+        );
+    }
+
+    public function test_it_can_create_a_temporary_file_in_a_target_directory_with_the_tmp_file_method(): void
+    {
+        $targetDirectory = $this->tmp;
+        $before = self::snapshotDirContent($targetDirectory);
+
+        try {
+            $temporaryFile = $this->fileSystem->tmpFile('Prefix', 'Suffix', $targetDirectory);
+
+            $expected = [...$before, FS::escapePath($temporaryFile)];
+            $actual = self::snapshotDirContent($targetDirectory);
+
+            self::assertFileIsReadable($temporaryFile);
+            self::assertEqualsCanonicalizing($expected, $actual);
+        } finally {
+            FS::remove($temporaryFile);
+        }
+
+        $fileName = str_replace(
+            $targetDirectory.DIRECTORY_SEPARATOR,
+            '',
+            $temporaryFile,
+        );
+
+        self::assertMatchesRegularExpression(
+            '/^Prefix[\p{L}\d\.]+Suffix$/',
+            $fileName,
+        );
+    }
+
+    public function test_it_can_create_a_temporary_file_which_targets_the_system_default_tmp_dir_by_default(): void
+    {
+        $targetDirectory = sys_get_temp_dir();
+        $before = self::snapshotDirContent($targetDirectory);
+
+        try {
+            $temporaryFile = $this->fileSystem->tmpFile('Prefix', 'Suffix');
+
+            $expected = [...$before, FS::escapePath($temporaryFile)];
+            $actual = self::snapshotDirContent($targetDirectory);
+
+            self::assertFileIsReadable($temporaryFile);
+            self::assertEqualsCanonicalizing($expected, $actual);
+        } finally {
+            FS::remove($temporaryFile);
+        }
+
+        $fileName = str_replace(
+            $targetDirectory.DIRECTORY_SEPARATOR,
+            '',
+            $temporaryFile,
+        );
+
+        self::assertMatchesRegularExpression(
+            '/^Prefix[\p{L}\d\.]+Suffix$/',
+            $fileName,
+        );
+    }
+
+    public function test_it_can_create_a_temporary_directory(): void
+    {
+        $targetDirectory = sys_get_temp_dir();
+        $before = self::snapshotDirContent($targetDirectory);
+
+        try {
+            $temporaryDirectory = $this->fileSystem->tmpDir('Prefix');
+
+            $expected = [...$before, $temporaryDirectory];
+            $actual = self::snapshotDirContent($targetDirectory);
+
+            self::assertDirectoryIsReadable($temporaryDirectory);
+            self::assertEqualsCanonicalizing($expected, $actual);
+        } finally {
+            FS::remove($temporaryDirectory);
+        }
+
+        $directoryName = str_replace(
+            $targetDirectory.DIRECTORY_SEPARATOR,
+            '',
+            $temporaryDirectory,
+        );
+
+        self::assertMatchesRegularExpression(
+            '/^Prefix[\p{L}\d]+$/',
+            $directoryName,
+        );
+    }
+
+    public function test_it_can_create_a_temporary_directory_in_a_target_directory(): void
+    {
+        $targetDirectory = $this->tmp;
+        $before = self::snapshotDirContent($targetDirectory);
+
+        try {
+            $temporaryDirectory = $this->fileSystem->tmpDir('Prefix', $targetDirectory);
+
+            $expected = [...$before, $temporaryDirectory];
+            $actual = self::snapshotDirContent($targetDirectory);
+
+            self::assertDirectoryIsReadable($temporaryDirectory);
+            self::assertEqualsCanonicalizing($expected, $actual);
+        } finally {
+            FS::remove($temporaryDirectory);
+        }
+
+        $directoryName = str_replace(
+            $targetDirectory.DIRECTORY_SEPARATOR,
+            '',
+            $temporaryDirectory,
+        );
+
+        self::assertMatchesRegularExpression(
+            '/^Prefix[\p{L}\d]+$/',
+            $directoryName,
+        );
+    }
+
     private static function isWindows(): bool
     {
         return PHP_OS_FAMILY === 'Windows';
+    }
+
+    private static function snapshotDirContent(string $directory): array
+    {
+        $filesAndDirectories = Finder::create()
+            ->in($directory)
+            ->depth(0);
+
+        $names = array_map(
+            static fn (SplFileInfo $fileInfo) => $fileInfo->getPathname(),
+            iterator_to_array($filesAndDirectories, preserve_keys: false),
+        );
+        sort($names, SORT_STRING);
+
+        return $names;
     }
 }

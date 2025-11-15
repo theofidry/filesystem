@@ -199,4 +199,17 @@ final class FakeFileSystem implements FileSystem
     {
         throw new DomainException('Unexpected call.');
     }
+
+    public function tmpFile(
+        string $prefix,
+        string $suffix = '',
+        ?string $targetDirectory = null,
+    ): string {
+        throw new DomainException('Unexpected call.');
+    }
+
+    public function tmpDir(string $prefix, ?string $targetDirectory = null): string
+    {
+        throw new DomainException('Unexpected call.');
+    }
 }

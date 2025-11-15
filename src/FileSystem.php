@@ -48,6 +48,7 @@ namespace Fidry\FileSystem;
 
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
+use function tempnam;
 
 interface FileSystem extends SymfonyFileSystem
 {
@@ -57,6 +58,12 @@ interface FileSystem extends SymfonyFileSystem
      */
     public function isRelativePath(string $path): bool;
 
+    /**
+     * Replaces the path directory separator with the system one.
+     *
+     * For example, on Windows:
+     * 'C:/path/to/file' => 'C:\path\to\file',
+     */
     public function escapePath(string $path): string;
 
     /**
@@ -92,6 +99,9 @@ interface FileSystem extends SymfonyFileSystem
     public function getFileContents(string $file): string;
 
     /**
+     * @deprecated Use the `::tmpDir()` method. Deprecated since 2.0 and it will be removed in 3.0.
+     * @see self::tmpDir()
+     *
      * Creates a temporary directory.
      *
      * @param string $namespace the directory path in the system's temporary directory
@@ -102,6 +112,66 @@ interface FileSystem extends SymfonyFileSystem
     public function makeTmpDir(string $namespace, string $className): string;
 
     /**
+     * Creates a temporary file with support for custom stream wrappers. Same as tempnam(),
+     * but targets the system default temporary directory by default and has a more consistent
+     * name with tmpDir.
+     *
+     * For example:
+     *
+     *  ```php
+     *  tmpFile('build')
+     *
+     *  // on OSX
+     *  => '/var/folders/p3/lkw0cgjj2fq0656q_9rd0mk80000gn/T/build8d9e0f1a'
+     *  // on Windows
+     *  => C:\Windows\Temp\build8d9e0f1a.tmp
+     *  ```
+     *
+     * @param string $prefix          The prefix of the generated temporary file name.
+     * @param string $suffix          The suffix of the generated temporary file name.
+     * @param string $targetDirectory The directory where to create the temporary directory.
+     *                                Defaults to the system default temporary directory.
+     *
+     * @throws IOException
+     * @return string      The new temporary file pathname.
+     *
+     * @see tempnam()
+     * @see SymfonyFileSystem::tempnam()
+     * @see self::tmpDir()
+     */
+    public function tmpFile(string $prefix, string $suffix = '', ?string $targetDirectory = null): string;
+
+    /**
+     * Creates a temporary directory with support for custom stream wrappers. Similar to tempnam()
+     * but creates a directory instead of a file.
+     *
+     * For example:
+     *
+     * ```php
+     * tmpDir('build')
+     *
+     * // on OSX
+     * => '/var/folders/p3/lkw0cgjj2fq0656q_9rd0mk80000gn/T/build8d9e0f1a'
+     * // on Windows
+     * => C:\Windows\Temp\build8d9e0f1a.tmp
+     * ```
+     *
+     * @param string|null $prefix          The prefix of the generated temporary directory name.
+     * @param string      $targetDirectory The directory where to create the temporary directory.
+     *                                     Defaults to the system default temporary directory.
+     *
+     * @throws IOException
+     *
+     * @return string The new temporary directory pathname.
+     *
+     * @see tempnam()
+     */
+    public function tmpDir(string $prefix, ?string $targetDirectory = null): string;
+
+    /**
+     * @deprecated Deprecated since 2.0. Use `Path::isRelative()` instead. Will be removed in 3.0.
+     *             Using a namespaced dir is an antipattern with parallel testing.
+     *
      * Gets a namespaced temporary directory.
      *
      * @param string $namespace the directory path in the system's temporary directory

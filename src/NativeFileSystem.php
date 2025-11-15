@@ -51,10 +51,12 @@ use Symfony\Component\Filesystem\Filesystem as NativeSymfonyFilesystem;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Webmozart\Assert\Assert;
+use function bin2hex;
 use function function_exists;
 use function is_dir;
 use function is_file;
 use function is_readable;
+use function random_bytes;
 use function random_int;
 use function realpath;
 use function restore_error_handler;
@@ -135,6 +137,51 @@ class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
         } while (false === $result && $attempts <= 10);
 
         return $tmpDir;
+    }
+
+    public function tmpFile(string $prefix, string $suffix = '', ?string $targetDirectory = null): string
+    {
+        return $this->escapePath(
+            $this->tempnam(
+                $targetDirectory ?? sys_get_temp_dir(),
+                $prefix,
+                $suffix,
+            ),
+        );
+    }
+
+    public function tmpDir(string $prefix, ?string $targetDirectory = null): string
+    {
+        $targetDirectory ??= sys_get_temp_dir();
+
+        for ($i = 0; $i < 10; ++$i) {
+            // Create a unique directory name using the same pattern as Symfony's tempnam()
+            $tmpDir = $targetDirectory.DIRECTORY_SEPARATOR.$prefix.bin2hex(random_bytes(4));
+
+            // Might be better to us the Filesystem::box(); but its an internal
+            // API.
+            // It is probably not a big deal given the usage of this library but
+            // would need to be adjusted if merged to Symfony.
+            if ($this->exists($tmpDir)) {
+                continue;
+            }
+
+            try {
+                $this->mkdir($tmpDir);
+
+                return $tmpDir;
+            } catch (IOException) {
+                continue;
+            }
+        }
+
+        throw new IOException(
+            sprintf(
+                'A temporary directory could not be created in "%s": %s',
+                $targetDirectory,
+                self::$lastError,
+            )
+        );
     }
 
     public function getNamespacedTmpDir(string $namespace): string
