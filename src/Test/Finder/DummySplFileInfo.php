@@ -40,11 +40,17 @@ use Symfony\Component\Finder\SplFileInfo;
 
 final class DummySplFileInfo extends SplFileInfo
 {
+    /**
+     * @param string|false|null $realPath With null, the real path is read from the file system,
+     *                                    so it is false when the file does not exist. With false,
+     *                                    it is false even when the file exists.
+     */
     public function __construct(
         string $file,
-        string $relativePath,
-        string $relativePathname,
-        private readonly string $contents,
+        string $relativePath = '',
+        string $relativePathname = '',
+        private readonly string $contents = '',
+        private readonly string|false|null $realPath = null,
     ) {
         parent::__construct(
             $file,
@@ -56,5 +62,10 @@ final class DummySplFileInfo extends SplFileInfo
     public function getContents(): string
     {
         return $this->contents;
+    }
+
+    public function getRealPath(): false|string
+    {
+        return $this->realPath ?? parent::getRealPath();
     }
 }

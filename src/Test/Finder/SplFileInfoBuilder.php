@@ -49,6 +49,7 @@ final class SplFileInfoBuilder
         private string $relativePath,
         private string $relativePathname,
         private string $contents,
+        private string|false|null $realPath = null,
     ) {
     }
 
@@ -110,6 +111,17 @@ final class SplFileInfoBuilder
         return $clone;
     }
 
+    /**
+     * @see DummySplFileInfo::__construct() for what null and false mean.
+     */
+    public function withRealPath(string|false|null $realPath): self
+    {
+        $clone = clone $this;
+        $clone->realPath = $realPath;
+
+        return $clone;
+    }
+
     public function build(): SplFileInfo
     {
         return new DummySplFileInfo(
@@ -117,6 +129,7 @@ final class SplFileInfoBuilder
             $this->relativePath,
             $this->relativePathname,
             $this->contents,
+            $this->realPath,
         );
     }
 }

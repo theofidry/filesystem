@@ -41,6 +41,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Finder\SplFileInfo;
+use function realpath;
 
 /**
  * @internal
@@ -154,6 +155,58 @@ final class SplFileInfoBuilderTest extends TestCase
         yield [
             SplFileInfoBuilder::withTestData()->build(),
         ];
+    }
+
+    #[DataProvider('realPathProvider')]
+    public function test_it_can_configure_the_real_path(
+        SplFileInfoBuilder $builder,
+        string|false $expected,
+    ): void {
+        $fileInfo = $builder->build();
+
+        self::assertSame($expected, $fileInfo->getRealPath());
+    }
+
+    public static function realPathProvider(): iterable
+    {
+        yield 'default: non-existent file' => [
+            SplFileInfoBuilder::withTestData(),
+            false,
+        ];
+
+        yield 'default: existing file' => [
+            SplFileInfoBuilder::withTestData()->withFile(__FILE__),
+            realpath(__FILE__),
+        ];
+
+        yield 'fake real path for a non-existent file' => [
+            SplFileInfoBuilder::withTestData()->withRealPath('/path/to/virtual-file.php'),
+            '/path/to/virtual-file.php',
+        ];
+
+        yield 'false for an existing file' => [
+            SplFileInfoBuilder::withTestData()
+                ->withFile(__FILE__)
+                ->withRealPath(false),
+            false,
+        ];
+
+        yield 'reset to the native lookup' => [
+            SplFileInfoBuilder::withTestData()
+                ->withFile(__FILE__)
+                ->withRealPath('/path/to/virtual-file.php')
+                ->withRealPath(null),
+            realpath(__FILE__),
+        ];
+    }
+
+    public function test_setting_the_real_path_does_not_change_the_original_builder(): void
+    {
+        $builder = SplFileInfoBuilder::withTestData();
+
+        $builder->withRealPath('/path/to/virtual-file.php');
+
+        self::assertFalse($builder->build()->getRealPath());
     }
 
     private static function getTestedSplFileInfoState(SplFileInfo $fileInfo): array

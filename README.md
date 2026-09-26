@@ -226,6 +226,7 @@ is often simpler than using a mock:
 -    return $splFileInfoMock;
 +    return SplFileInfoBuilder::withTestData()
 +        ->withFile($file)
++        ->withRealPath($file)
 +        ->withContents(
 +            file_exists($file) ? file_get_contents($file) : 'content',
 +        )
