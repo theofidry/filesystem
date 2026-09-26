@@ -34,38 +34,61 @@
 
 declare(strict_types=1);
 
-namespace Fidry\FileSystem\Test\Finder;
+namespace Fidry\FileSystem\Tests\Test\Finder;
 
-use Symfony\Component\Finder\SplFileInfo;
+use Fidry\FileSystem\Test\Finder\DummySplFileInfo;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use function realpath;
 
-final class DummySplFileInfo extends SplFileInfo
+/**
+ * @internal
+ */
+#[CoversClass(DummySplFileInfo::class)]
+final class DummySplFileInfoTest extends TestCase
 {
-    /**
-     * @param string|false|null $realPath With null, the real path is read from the file system,
-     *                                    so it is false when the file does not exist. With false,
-     *                                    it is false even when the file exists.
-     */
-    public function __construct(
-        string $file,
-        string $relativePath,
-        string $relativePathname,
-        private readonly string $contents,
-        private readonly string|false|null $realPath = null,
-    ) {
-        parent::__construct(
-            $file,
-            $relativePath,
-            $relativePathname,
+    public function test_it_uses_the_file_system_real_path_by_default(): void
+    {
+        $fileInfo = new DummySplFileInfo(
+            file: __FILE__,
+            relativePath: '',
+            relativePathname: '',
+            contents: '',
         );
+
+        $expected = realpath(__FILE__);
+        $actual = $fileInfo->getRealPath();
+
+        self::assertSame($expected, $actual);
     }
 
-    public function getContents(): string
+    public function test_it_can_fake_the_real_path_of_a_non_existent_file(): void
     {
-        return $this->contents;
+        $expected = '/path/to/project/src/File1.php';
+
+        $fileInfo = new DummySplFileInfo(
+            file: 'src/File1.php',
+            relativePath: 'src',
+            relativePathname: 'src/File1.php',
+            contents: '',
+            realPath: $expected,
+        );
+
+        $actual = $fileInfo->getRealPath();
+
+        self::assertSame($expected, $actual);
     }
 
-    public function getRealPath(): false|string
+    public function test_it_can_force_no_real_path_for_an_existing_file(): void
     {
-        return $this->realPath ?? parent::getRealPath();
+        $fileInfo = new DummySplFileInfo(
+            file: __FILE__,
+            relativePath: '',
+            relativePathname: '',
+            contents: '',
+            realPath: false,
+        );
+
+        self::assertFalse($fileInfo->getRealPath());
     }
 }

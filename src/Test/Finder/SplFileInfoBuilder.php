@@ -49,6 +49,7 @@ final class SplFileInfoBuilder
         private string $relativePath,
         private string $relativePathname,
         private string $contents,
+        private string|false|null $realPath,
     ) {
     }
 
@@ -59,6 +60,7 @@ final class SplFileInfoBuilder
             $file->getRelativePath(),
             $file->getRelativePathname(),
             $file->getContents(),
+            $file->getRealPath(),
         );
     }
 
@@ -75,6 +77,7 @@ final class SplFileInfoBuilder
                 echo 'Hello world!';
 
                 PHP,
+            '/path/to/project/src/App.php',
         );
     }
 
@@ -110,6 +113,14 @@ final class SplFileInfoBuilder
         return $clone;
     }
 
+    public function withRealPath(string|false|null $realPath): self
+    {
+        $clone = clone $this;
+        $clone->realPath = $realPath;
+
+        return $clone;
+    }
+
     public function build(): SplFileInfo
     {
         return new DummySplFileInfo(
@@ -117,6 +128,7 @@ final class SplFileInfoBuilder
             $this->relativePath,
             $this->relativePathname,
             $this->contents,
+            $this->realPath,
         );
     }
 }
