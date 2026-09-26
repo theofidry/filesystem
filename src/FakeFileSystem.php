@@ -121,7 +121,7 @@ final class FakeFileSystem implements FileSystem
         iterable|string $files,
         int $mode,
         int $umask = 0o000,
-        bool $recursive = false
+        bool $recursive = false,
     ): never {
         throw new DomainException('Unexpected call.');
     }
@@ -165,7 +165,7 @@ final class FakeFileSystem implements FileSystem
         string $originDir,
         string $targetDir,
         ?Traversable $iterator = null,
-        array $options = []
+        array $options = [],
     ): never {
         throw new DomainException('Unexpected call.');
     }
