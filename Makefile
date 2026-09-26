@@ -26,6 +26,10 @@ PHP_CS_FIXER = $(PHP_CS_FIXER_BIN) fix --ansi --verbose --config=.php-cs-fixer.p
 RECTOR_BIN = vendor-bin/rector/vendor/bin/rector
 RECTOR = $(RECTOR_BIN)
 
+# Keep in sync with the zizmor version in .github/workflows/zizmor.yaml.
+ZIZMOR_VERSION = 1.30.1
+ZIZMOR = docker run --rm --volume "$(CURDIR):/app" --workdir /app ghcr.io/zizmorcore/zizmor:$(ZIZMOR_VERSION)
+
 
 .DEFAULT_GOAL := default
 
@@ -83,6 +87,14 @@ rector_lint: $(RECTOR_BIN) var
 ifndef SKIP_RECTOR
 	$(RECTOR) --dry-run
 endif
+
+.PHONY: zizmor
+zizmor:	   ## Fixes the GitHub Actions security issues (via Docker)
+	$(ZIZMOR) --offline --fix .
+
+.PHONY: zizmor_lint
+zizmor_lint: ## Lints the GitHub Actions security (via Docker)
+	$(ZIZMOR) --offline .
 
 .PHONY: test
 test:	   ## Runs all the tests
