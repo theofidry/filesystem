@@ -17,6 +17,8 @@ jobs:
     tests:
         runs-on: "${{ matrix.operating-system }}"
         name: "Tests with PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }} on ${{ matrix.operating-system }}"
+        # Unstable builds (e.g. PHP nightly) may fail without failing the workflow.
+        continue-on-error: ${{ matrix.experimental == true }}
         strategy:
             fail-fast: true
             matrix:
@@ -25,6 +27,7 @@ jobs:
                     - "8.2"
                     - "8.3"
                     - "8.4"
+                    - "8.5"
                 symfony:
                     - "unchanged"
                     - "6.*.*"
@@ -37,6 +40,12 @@ jobs:
                       php: "8.4"
                       dependency-versions: "highest"
                       symfony: "unchanged"
+                    - operating-system: "ubuntu-latest"
+                      php: "8.6"
+                      dependency-versions: "highest"
+                      symfony: "unchanged"
+                      experimental: true
+                      composer-options: "--ignore-platform-req=php+"
 
         steps:
             -   name: "Check out repository code"
@@ -56,6 +65,7 @@ jobs:
                 uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
                 with:
                     dependency-versions: "${{ matrix.dependency-versions }}"
+                    composer-options: "${{ matrix.composer-options }}"
 
             -   name: "Run tests"
                 run: "make phpunit"
