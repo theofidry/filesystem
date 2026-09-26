@@ -183,7 +183,7 @@ class NativeFileSystem extends NativeSymfonyFilesystem implements FileSystem
                 'A temporary directory could not be created in "%s": %s',
                 $targetDirectory,
                 self::$lastError,
-            )
+            ),
         );
     }
 

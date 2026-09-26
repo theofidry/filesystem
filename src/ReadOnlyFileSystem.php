@@ -59,14 +59,14 @@ class ReadOnlyFileSystem extends NativeFileSystem
     public function copy(
         string $originFile,
         string $targetFile,
-        bool $overwriteNewerFiles = false
+        bool $overwriteNewerFiles = false,
     ): void {
         $this->handleWrite(__METHOD__);
     }
 
     public function mkdir(
         iterable|string $dirs,
-        int $mode = 0o777
+        int $mode = 0o777,
     ): void {
         $this->handleWrite(__METHOD__);
     }
@@ -74,7 +74,7 @@ class ReadOnlyFileSystem extends NativeFileSystem
     public function touch(
         iterable|string $files,
         ?int $time = null,
-        ?int $atime = null
+        ?int $atime = null,
     ): void {
         $this->handleWrite(__METHOD__);
     }
@@ -88,7 +88,7 @@ class ReadOnlyFileSystem extends NativeFileSystem
         iterable|string $files,
         int $mode,
         int $umask = 0o000,
-        bool $recursive = false
+        bool $recursive = false,
     ): void {
         $this->handleWrite(__METHOD__);
     }
@@ -96,7 +96,7 @@ class ReadOnlyFileSystem extends NativeFileSystem
     public function chown(
         iterable|string $files,
         int|string $user,
-        bool $recursive = false
+        bool $recursive = false,
     ): void {
         $this->handleWrite(__METHOD__);
     }
@@ -104,7 +104,7 @@ class ReadOnlyFileSystem extends NativeFileSystem
     public function chgrp(
         iterable|string $files,
         int|string $group,
-        bool $recursive = false
+        bool $recursive = false,
     ): void {
         $this->handleWrite(__METHOD__);
     }
@@ -112,7 +112,7 @@ class ReadOnlyFileSystem extends NativeFileSystem
     public function rename(
         string $origin,
         string $target,
-        bool $overwrite = false
+        bool $overwrite = false,
     ): void {
         $this->handleWrite(__METHOD__);
     }
@@ -120,14 +120,14 @@ class ReadOnlyFileSystem extends NativeFileSystem
     public function symlink(
         string $originDir,
         string $targetDir,
-        bool $copyOnWindows = false
+        bool $copyOnWindows = false,
     ): void {
         $this->handleWrite(__METHOD__);
     }
 
     public function hardlink(
         string $originFile,
-        iterable|string $targetFiles
+        iterable|string $targetFiles,
     ): void {
         $this->handleWrite(__METHOD__);
     }
@@ -136,7 +136,7 @@ class ReadOnlyFileSystem extends NativeFileSystem
         string $originDir,
         string $targetDir,
         ?Traversable $iterator = null,
-        array $options = []
+        array $options = [],
     ): void {
         $this->handleWrite(__METHOD__);
     }
@@ -144,7 +144,7 @@ class ReadOnlyFileSystem extends NativeFileSystem
     public function tempnam(
         string $dir,
         string $prefix,
-        string $suffix = ''
+        string $suffix = '',
     ): string {
         $this->handleWrite(__METHOD__);
 
@@ -154,7 +154,7 @@ class ReadOnlyFileSystem extends NativeFileSystem
     public function appendToFile(
         string $filename,
         $content,
-        bool $lock = false
+        bool $lock = false,
     ): void {
         $this->handleWrite(__METHOD__);
     }
