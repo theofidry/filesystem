@@ -12,7 +12,8 @@ updates:
                     - "*"
 
     -   package-ecosystem: "composer"
-        directory: "vendor-bin/*/"
+        directories:
+            - "/vendor-bin/*"
         schedule:
             interval: "weekly"
         cooldown:
