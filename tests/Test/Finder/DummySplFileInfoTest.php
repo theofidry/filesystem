@@ -47,48 +47,47 @@ use function realpath;
 #[CoversClass(DummySplFileInfo::class)]
 final class DummySplFileInfoTest extends TestCase
 {
-    public function test_it_can_be_created_from_a_path_only(): void
-    {
-        $fileInfo = new DummySplFileInfo('src/File1.php');
-
-        self::assertSame(
-            [
-                'pathname' => 'src/File1.php',
-                'relativePath' => '',
-                'relativePathname' => '',
-                'contents' => '',
-                'realPath' => false,
-            ],
-            [
-                'pathname' => $fileInfo->getPathname(),
-                'relativePath' => $fileInfo->getRelativePath(),
-                'relativePathname' => $fileInfo->getRelativePathname(),
-                'contents' => $fileInfo->getContents(),
-                'realPath' => $fileInfo->getRealPath(),
-            ],
-        );
-    }
-
     public function test_it_uses_the_file_system_real_path_by_default(): void
     {
-        $fileInfo = new DummySplFileInfo(__FILE__);
+        $fileInfo = new DummySplFileInfo(
+            file: __FILE__,
+            relativePath: '',
+            relativePathname: '',
+            contents: '',
+        );
 
-        self::assertSame(realpath(__FILE__), $fileInfo->getRealPath());
+        $expected = realpath(__FILE__);
+        $actual = $fileInfo->getRealPath();
+
+        self::assertSame($expected, $actual);
     }
 
     public function test_it_can_fake_the_real_path_of_a_non_existent_file(): void
     {
+        $expected = '/path/to/project/src/File1.php';
+
         $fileInfo = new DummySplFileInfo(
-            'src/File1.php',
-            realPath: '/path/to/project/src/File1.php',
+            file: 'src/File1.php',
+            relativePath: 'src',
+            relativePathname: 'src/File1.php',
+            contents: '',
+            realPath: $expected,
         );
 
-        self::assertSame('/path/to/project/src/File1.php', $fileInfo->getRealPath());
+        $actual = $fileInfo->getRealPath();
+
+        self::assertSame($expected, $actual);
     }
 
     public function test_it_can_force_no_real_path_for_an_existing_file(): void
     {
-        $fileInfo = new DummySplFileInfo(__FILE__, realPath: false);
+        $fileInfo = new DummySplFileInfo(
+            file: __FILE__,
+            relativePath: '',
+            relativePathname: '',
+            contents: '',
+            realPath: false,
+        );
 
         self::assertFalse($fileInfo->getRealPath());
     }

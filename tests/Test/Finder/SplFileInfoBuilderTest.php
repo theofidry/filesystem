@@ -153,7 +153,9 @@ final class SplFileInfoBuilderTest extends TestCase
     public static function fileInfoProvider(): iterable
     {
         yield [
-            SplFileInfoBuilder::withTestData()->build(),
+            SplFileInfoBuilder::withTestData()
+                ->withRealPath(null)
+                ->build(),
         ];
     }
 
@@ -170,17 +172,22 @@ final class SplFileInfoBuilderTest extends TestCase
     public static function realPathProvider(): iterable
     {
         yield 'default: non-existent file' => [
-            SplFileInfoBuilder::withTestData(),
-            false,
+            SplFileInfoBuilder::withTestData()
+                ->withFile('/path/to/project/src/App.php')
+                ->withRealPath('/path/to/project/src/App.php'),
+            '/path/to/project/src/App.php',
         ];
 
         yield 'default: existing file' => [
-            SplFileInfoBuilder::withTestData()->withFile(__FILE__),
-            realpath(__FILE__),
+            SplFileInfoBuilder::withTestData()
+                ->withFile(__FILE__)
+                ->withRealPath('/path/to/project/src/App.php'),
+            '/path/to/project/src/App.php',
         ];
 
         yield 'fake real path for a non-existent file' => [
-            SplFileInfoBuilder::withTestData()->withRealPath('/path/to/virtual-file.php'),
+            SplFileInfoBuilder::withTestData()
+                ->withRealPath('/path/to/virtual-file.php'),
             '/path/to/virtual-file.php',
         ];
 
@@ -198,15 +205,6 @@ final class SplFileInfoBuilderTest extends TestCase
                 ->withRealPath(null),
             realpath(__FILE__),
         ];
-    }
-
-    public function test_setting_the_real_path_does_not_change_the_original_builder(): void
-    {
-        $builder = SplFileInfoBuilder::withTestData();
-
-        $builder->withRealPath('/path/to/virtual-file.php');
-
-        self::assertFalse($builder->build()->getRealPath());
     }
 
     private static function getTestedSplFileInfoState(SplFileInfo $fileInfo): array

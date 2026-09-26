@@ -49,7 +49,7 @@ final class SplFileInfoBuilder
         private string $relativePath,
         private string $relativePathname,
         private string $contents,
-        private string|false|null $realPath = null,
+        private string|false|null $realPath,
     ) {
     }
 
@@ -60,6 +60,7 @@ final class SplFileInfoBuilder
             $file->getRelativePath(),
             $file->getRelativePathname(),
             $file->getContents(),
+            $file->getRealPath(),
         );
     }
 
@@ -76,6 +77,7 @@ final class SplFileInfoBuilder
                 echo 'Hello world!';
 
                 PHP,
+            '/path/to/project/src/App.php',
         );
     }
 
@@ -111,9 +113,6 @@ final class SplFileInfoBuilder
         return $clone;
     }
 
-    /**
-     * @see DummySplFileInfo::__construct() for what null and false mean.
-     */
     public function withRealPath(string|false|null $realPath): self
     {
         $clone = clone $this;

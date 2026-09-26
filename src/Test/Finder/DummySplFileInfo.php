@@ -47,9 +47,9 @@ final class DummySplFileInfo extends SplFileInfo
      */
     public function __construct(
         string $file,
-        string $relativePath = '',
-        string $relativePathname = '',
-        private readonly string $contents = '',
+        string $relativePath,
+        string $relativePathname,
+        private readonly string $contents,
         private readonly string|false|null $realPath = null,
     ) {
         parent::__construct(
